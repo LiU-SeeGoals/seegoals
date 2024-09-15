@@ -1,0 +1,18 @@
+# docker-compose.local-controller.yml (local controller, GHCR game viewer)
+version: '3.5'
+
+services:
+  controller:
+    build: ./controller
+    image: ""
+    env_file:
+      - .env
+    tty: true
+    ports:
+      - "8080:8080"
+    networks:
+      - simulation
+    volumes:
+      - ./controller/:/var/controller
+      - ./.env:/var/controller/.env
+    command: tail -f /dev/null
