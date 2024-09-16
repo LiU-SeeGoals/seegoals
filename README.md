@@ -6,17 +6,25 @@ This repo contains the Docker configuration for SeeGoals. It sets up both the pr
 
 # How to run 🚀
 
-1. Note: this project uses a tool called Docker. Docker can be installed on both linux and windows, but is way easier to work with on linux. If you dont have linux on you computer, it's recomended to work from the lab computer "fetdatorn", and then using the "remote explorer" plugin in vscode. Ask around for help with this setup.
+Note: this project uses a tool called Docker. Docker can be installed on both linux and windows, but is way easier to work with on linux. If you dont have linux on you computer, it's recomended to work from the lab computer "fetdatorn", and then using the "remote explorer" plugin in vscode. Ask around for help with this setup.
 
-2. Start with cloning this repo to the comuter you decided to work from. Click green button with the text code at this [website](https://github.com/LiU-SeeGoals/seegoals). Then make sure "SSH" is selected, and then copy the text. Note: you need to have ssh keys to set this up. If you don't have it follow this [guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
+### Dependencies
+1. You need to make sure you have git installed by running ```git -v``` in terminal. You see something similar to this as output: ```git version 2.43.0```. You also need to fix ssh keys so you are allowed to clone repos. If you don't have it follow this [guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
-3. Then clone the repo by writing `git clone` and copying the command from previous step. It should look similar to this:
+2. Then install docker. [Here](https://docs.docker.com/engine/install/ubuntu/) is a guide. Then run ```docker -v``` to confirm installation. You also need to make sure that a "normal" user can run docker. Test by running ```docker ps``` (not using sudo). Otherwise you need to fix docker permission for the scripts to work later on.
+
+3. Install docker compose. [Here](https://docs.docker.com/compose/install/linux/) is a installation guide. You should now verify install by running ```docker compose --help```.
+
+### Setup
+4. Start with cloning this repo to the computer you decided to work from. Click green button with the text "code" at this [website](https://github.com/LiU-SeeGoals/seegoals). Then make sure "SSH" is selected, and then copy the text. 
+
+5. Then clone the repo by writing `git clone` and copying the command from previous step. It should look similar to this:
 
 ```
 git clone git@github.com:LiU-SeeGoals/docker.git
 ```
 
-4. Then go inside the new folder (repo) called docker `(cd docker)`. To start all the containers, run if you are on linux (recomended):
+6. Then go inside the new folder (repo) called docker `(cd seegoals)`. To start all the containers, run if you are on linux (recomended):
 
 ```
 ./start.sh
@@ -24,9 +32,9 @@ git clone git@github.com:LiU-SeeGoals/docker.git
 
 Select the option 1 (start base configuration)
 
-All the containers will then start running.
+All the containers will then start running. (it can take while to download everything)
 
-To see the website, navigate to the URL displayed in the terminal log. You should see a slight vibration in the robots, indicating that the containers have started as expected.
+To see the website, navigate to the URL displayed in the terminal log. You should see a slight vibration in the robots, indicating that the containers have started as expected. Refresh the website if there is no connection to the webserver (sometimes it takes a while for the webserver to start).
 
 # Want to code for the AI or the website?
 
