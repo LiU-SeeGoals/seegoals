@@ -11,7 +11,7 @@ Note: this project uses a tool called Docker. Docker can be installed on both li
 ### Dependencies
 1. You need to make sure you have git installed by running ```git -v``` in terminal. You see something similar to this as output: ```git version 2.43.0```. You also need to fix ssh keys so you are allowed to clone repos. If you don't have it follow this [guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
-2. Then install docker. [Here](https://docs.docker.com/engine/install/ubuntu/) is a guide. Then run ```docker -v``` to confirm installation. You also need to make sure that a "normal" user can run docker. Test by running ```docker ps``` (not using sudo). Otherwise you need to fix docker permission for the scripts to work later on.
+2. Then install docker. [Here](https://docs.docker.com/engine/install/ubuntu/) is a guide. Then run ```docker -v``` to confirm installation. You also need to make sure that a "normal" user can run docker. Test by running ```docker ps``` (not using sudo). Otherwise you need to fix docker permissions, (the scripts might break if not fixed).
 
 3. Install docker compose. [Here](https://docs.docker.com/compose/install/linux/) is a installation guide. You should now verify install by running ```docker compose --help```.
 

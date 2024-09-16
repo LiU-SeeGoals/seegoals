@@ -53,7 +53,6 @@ case $choice in
   3)
     echo "Starting with local game viewer and GHCR controller..."
     docker compose -f docker-compose.yml -f docker-compose.local-gameviewer.yml -p gameviewer-config up --build -d
-    echo -e "${CYAN}Website: ${RED}http://localhost:5173/${NC}"
     echo -e "${CYAN}Entering game-viewer container...${NC}"
     docker compose -p gameviewer-config exec game-viewer bash
     ;;
@@ -61,7 +60,6 @@ case $choice in
     echo "Starting with local controller and local game viewer..."
     docker compose -f docker-compose.yml -f docker-compose.local-controller.yml -f docker-compose.local-gameviewer.yml -p dev-config up --build -d
     echo -e "${GREEN}Both controller and game-viewer are local. Not entering any container.${NC}"
-    echo -e "${CYAN}Website: ${RED}http://localhost:5173/${NC}"
     ;;
   *)
     echo "Invalid choice. Exiting..."
