@@ -21,7 +21,7 @@ Note: this project uses a tool called Docker. Docker can be installed on both li
 5. Then clone the repo by writing `git clone` and copying the command from previous step. It should look similar to this:
 
 ```
-git clone git@github.com:LiU-SeeGoals/docker.git
+git clone git@github.com:LiU-SeeGoals/seegoals.git
 ```
 
 6. Then go inside the new folder (repo) called docker `(cd seegoals)`. To start all the containers, run if you are on linux (recomended):
