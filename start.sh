@@ -34,8 +34,9 @@ echo "4. Local controller and local game viewer"
 read -p "Enter your choice (1-4): " choice
 
 echo -e "${CYAN}closing previous containers${NC}"
-docker stop $(docker ps -q) # close all previous running containers
+docker stop $(docker ps -q) # close all previous running containers 
 echo -e "${CYAN}Website: ${RED}http://localhost:5173/${NC}"
+echo -e "${CYAN}Other website: ${RED}http://localhost:8082/${NC}"
 
 
 # Define Docker Compose command based on the user's choice
