@@ -18,6 +18,28 @@ services:
     depends_on:
       - sim
 
+  # ssl-game-controller:
+  #   image: robocupssl/ssl-game-controller:latest
+  #   command:
+  #     - "-visionAddress"
+  #     - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_MAIN_PORT}"
+  #     - "-trackerAddress"
+  #     - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_MAIN_PORT}"
+  #     - "-publishAddress"
+  #     - "${GC_PUBLISH_ADDR}:${GC_PUBLISH_PORT}"
+  #     - "-address"
+  #     - ":${WEB_GC_UI_PORT}"
+  #   ports:
+  #     - "${WEB_GC_UI_PORT}:${WEB_GC_UI_PORT}"
+  #   networks:
+  #     - simulation
+  #   depends_on:
+  #     - sim
+  #   volumes:
+  #     - ./config/:/config
+  #     - ./data/:/data
+    
+
   sim:
     image: roboticserlangen/simulatorcli:commit-6a4e1c06533b
     environment:
