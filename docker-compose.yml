@@ -18,6 +18,20 @@ services:
     depends_on:
       - sim
 
+  controller-python:
+    build: ./controller/python
+    image: ""
+    tty: true
+    environment:
+      FLASK_APP: main.py
+    ports:
+      - "5000:5000"
+    networks:
+      - simulation
+    volumes:
+      - ./controller/python/:/app
+    command: flask run -h 0.0.0.0
+
   # ssl-game-controller:
   #   image: robocupssl/ssl-game-controller:latest
   #   command:
