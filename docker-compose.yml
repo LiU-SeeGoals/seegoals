@@ -21,7 +21,6 @@ services:
   controller-python:
     build: ./controller/python
     image: ""
-    tty: true
     environment:
       FLASK_APP: main.py
     ports:
@@ -30,7 +29,7 @@ services:
       - simulation
     volumes:
       - ./controller/python/:/app
-    command: flask run -h 0.0.0.0
+    command: python3 main.py
 
   # ssl-game-controller:
   #   image: robocupssl/ssl-game-controller:latest

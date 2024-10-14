@@ -1,0 +1,16 @@
+version: '3.5'
+
+services:
+  controller-python:
+    build: ./controller/python
+    image: ""
+    environment:
+      FLASK_APP: main.py
+    ports:
+      - "5000:5000"
+    networks:
+      - simulation
+    volumes:
+      - ./controller/python/:/app
+    tty: true
+    command: tail -f /dev/null
