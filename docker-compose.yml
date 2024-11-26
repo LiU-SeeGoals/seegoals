@@ -2,29 +2,29 @@ version: '3.5'
 
 services:
 
-  # ssl-vision-client:
-  #   image: robocupssl/ssl-vision-client:latest
-  #   command:
-  #     - "-visionAddress"
-  #     - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_MAIN_PORT}"
-  #     - "-visualizationAddress"
-  #     - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
-  #     - "-address"
-  #     - ":${WEB_VISION_UI_PORT}"
-  #   ports:
-  #     - "${WEB_VISION_UI_PORT}:${WEB_VISION_UI_PORT}"
-  #   networks:
-  #     - simulation
-  #   depends_on:
-  #     - sim
+  ssl-vision-client:
+    image: robocupssl/ssl-vision-client:latest
+    command:
+      - "-visionAddress"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
+      - "-visualizationAddress"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
+      - "-address"
+      - ":${WEB_VISION_UI_PORT}"
+    ports:
+      - "${WEB_VISION_UI_PORT}:${WEB_VISION_UI_PORT}"
+    networks:
+      - simulation
+    depends_on:
+      - sim
   
   ssl-game-controller:
     image: robocupssl/ssl-game-controller:latest
     command:
       - "-visionAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_MAIN_PORT}"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
       - "-trackerAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_MAIN_PORT}"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
       - "-publishAddress"
       - "${GC_PUBLISH_ADDR}:${GC_PUBLISH_PORT}"
       - "-address"
@@ -74,3 +74,4 @@ services:
 
 networks:
   simulation:
+    driver: bridge

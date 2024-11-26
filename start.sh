@@ -31,7 +31,8 @@ echo "1. Base configuration (pre built images for both services)"
 echo "2. Local controller"
 echo "3. local game viewer"
 echo "4. Local controller and local game viewer"
-read -p "Enter your choice (1-4): " choice
+echo "5. Start real SSL vision (only on fetdator)"
+read -p "Enter your choice (1-5): " choice
 
 echo -e "${CYAN}closing previous containers${NC}"
 docker stop $(docker ps -q) # close all previous running containers 
@@ -61,6 +62,11 @@ case $choice in
     echo "Starting with local controller and local game viewer..."
     docker compose -f docker-compose.yml -f docker-compose.local-controller.yml -f docker-compose.local-gameviewer.yml -p dev-config up --build -d
     echo -e "${GREEN}Both controller and game-viewer are local. Not entering any container.${NC}"
+    ;;
+  5)
+    echo "Starting setup for real cameras"
+    docker compose -f docker-compose.yml -f docker-compose.real-robots.yml -p gameviewer-config up --build -d
+    echo -e "${GREEN}Everything is started. Not entering any container.${NC}"
     ;;
   *)
     echo "Invalid choice. Exiting..."
