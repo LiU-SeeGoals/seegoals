@@ -1,5 +1,3 @@
-version: '3.5'
-
 services:
 
   ssl-vision-client:
@@ -42,7 +40,6 @@ services:
     volumes:
       - ./config/:/config
       - ./data/:/data
-    
 
   sim:
     image: roboticserlangen/simulatorcli:commit-6a4e1c06533b

@@ -1,6 +1,4 @@
 # docker-compose.local-controller.yml (local controller, GHCR game viewer)
-version: '3.5'
-
 services:
   controller:
     build: ./controller
@@ -10,6 +8,7 @@ services:
     tty: true
     ports:
       - "8080:8080"
+    container_name: ai
     networks:
       - simulation
     volumes:

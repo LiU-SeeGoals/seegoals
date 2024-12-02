@@ -1,12 +1,12 @@
-version: '3.5'
 services:
   sim:
     image: ghcr.io/liu-seegoals/ssl-vision:latest
-    container_name: ssl_vision_container
+    # container_name: ssl_vision_container
     environment:
       - QT_QPA_PLATFORM=offscreen
     restart: no
     stdin_open: true
+    container_name: vision
     tty: true
     networks:
       - simulation
@@ -22,6 +22,7 @@ services:
       - ":${WEB_VISION_UI_PORT}"
     ports:
       - "${WEB_VISION_UI_PORT}:${WEB_VISION_UI_PORT}"
+    container_name: ssl-viewer
     networks:
       - simulation
     depends_on:
