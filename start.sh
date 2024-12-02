@@ -65,7 +65,7 @@ case $choice in
     ;;
   5)
     echo "Starting setup for real cameras"
-    docker compose -f docker-compose.yml -f docker-compose.real-robots.yml -p gameviewer-config up --build -d
+    docker compose -f docker-compose.yml -f docker-compose.real-robots.yml -f docker-compose.local-controller.yml -p gameviewer-config up --build -d
     echo -e "${GREEN}Everything is started. Not entering any container.${NC}"
     ;;
   *)
