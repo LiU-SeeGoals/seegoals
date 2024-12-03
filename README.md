@@ -2,9 +2,9 @@
 
 This repo and README is the starting point for new memebers!
 
-If you're here lokking for documentation on controlling the robots, visit the [controller repository](https://github.com/LiU-SeeGoals/controller). To learn more about how the visualization works, check out the [gameViewer repository](https://github.com/LiU-SeeGoals/GameViewer).
-
 This repo contains the Docker configuration for SeeGoals. It sets up both the production and development environments.
+
+If you're here lokking for documentation on controlling the robots, visit the [controller repository](https://github.com/LiU-SeeGoals/controller). To learn more about how the visualization works, check out the [gameViewer repository](https://github.com/LiU-SeeGoals/GameViewer).
 
 # How to run 🚀
 
