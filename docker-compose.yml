@@ -1,6 +1,6 @@
 services:
 
-  ssl-vision-client:
+  ssl-viewer:
     image: robocupssl/ssl-vision-client:latest
     command:
       - "-visionAddress"
@@ -13,12 +13,10 @@ services:
       - "${WEB_VISION_UI_PORT}:${WEB_VISION_UI_PORT}"
     networks:
       - simulation
-    restart: "no"
-    container_name: ssl-viewer
     depends_on:
-      - sim
+      - viewer
   
-  ssl-game-controller:
+  game-controller:
     image: robocupssl/ssl-game-controller:latest
     command:
       - "-visionAddress"
@@ -33,25 +31,21 @@ services:
       - "${WEB_GC_UI_PORT}:${WEB_GC_UI_PORT}"
     networks:
       - simulation
-    container_name: game-controller
     depends_on:
-      - sim
-    restart: "no"
+      - viewer
     volumes:
       - ./config/:/config
       - ./data/:/data
 
-  sim:
+  vision:
     image: roboticserlangen/simulatorcli:commit-6a4e1c06533b
     environment:
       GEOMETRY: "2020B"
       REALISM: "RC2021"
     networks:
       - simulation
-    restart: "no"
-    container_name: vision
 
-  controller:
+  ai:
     image: ghcr.io/liu-seegoals/controller:latest
     env_file:
       - .env
@@ -60,12 +54,10 @@ services:
       - "8080:8080"
     networks:
       - simulation
-    container_name: ai
-    restart: "no"
     volumes:
       - ./.env:/var/controller/.env
 
-  game-viewer:
+  viewer:
     image: ghcr.io/liu-seegoals/game-viewer:latest
     tty: true
     ports:
@@ -73,9 +65,7 @@ services:
     networks:
       - simulation
     depends_on:
-      - controller
-    container_name: viewer
-    restart: "no"
+      - ai
     volumes:
       - ./.env:/.env
 

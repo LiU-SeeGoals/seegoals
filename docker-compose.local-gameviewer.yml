@@ -1,6 +1,6 @@
-# docker-compose.local-gameviewer.yml (GHCR controller, local game viewer)
 services:
-  game-viewer:
+
+  viewer:
     build: ./GameViewer
     image: ""
     tty: true
@@ -8,7 +8,6 @@ services:
       - "5173:5173"
     networks:
       - simulation
-    container_name: viewer
     depends_on:
       - controller
     volumes:
