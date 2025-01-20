@@ -6,6 +6,7 @@ services:
     tty: true
     ports:
       - "5173:5173"
+      - "3000:3000" # Honest to God I have no idea why this is required. But without it the backend server listening to multicast cannot talk to the webpage
     networks:
       - simulation
     container_name: viewer
