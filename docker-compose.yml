@@ -81,7 +81,7 @@ services:
     container_name: viewer
     restart: "no"
     volumes:
-      - ./.env:/var/GameViewer/.env
+      - ./.env:/.env
 
 networks:
   simulation:

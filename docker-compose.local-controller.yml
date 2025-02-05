@@ -14,5 +14,5 @@ services:
       - simulation
     volumes:
       - ./controller/:/var/controller
-      - ./.env:/var/controller/.env
+      - ./.env:/.env # If this was /var/controller/.env then the .env file will be volumed into the workspace of GameViewer
     command: tail -f /dev/null
