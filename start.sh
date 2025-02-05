@@ -18,7 +18,7 @@ if check_submodule_status; then
 else
   echo "Submodules are not initialized. Initializing now..."
   # Initialize and update submodules without changing their current state
-  git submodule update --init --recursive --no-fetch
+  git submodule update --init --recursive --no-fetch --remote
   echo "Submodules initialized and updated."
 fi
 
@@ -80,7 +80,10 @@ case $choice in
     echo -e "${GREEN}Both controller and game-viewer are local. Not entering any container.${NC}"
     ;;
   5)
+    sudo ip addr add 192.168.1.10/24 dev enp4s0
+
     docker pull ghcr.io/liu-seegoals/ssl-vision:latest
+    docker pull ghcr.io/liu-seegoals/game-viewer:latest
 
     echo "Starting setup for real cameras"
     docker compose -f docker-compose.yml -f docker-compose.real-robots.yml -f docker-compose.local-controller.yml -p gameviewer-config up --build -d --force-recreate
