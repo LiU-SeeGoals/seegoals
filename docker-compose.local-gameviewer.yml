@@ -4,6 +4,9 @@ services:
     build: ./GameViewer
     image: ""
     tty: true
+    environment:
+      - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
+      - SSL_VISION_MULTICAST_PORT=${SSL_SIM_VISION_MAIN_PORT}
     ports:
       - "5173:5173"
       - "3000:3000" # Honest to God I have no idea why this is required. But without it the backend server listening to multicast cannot talk to the webpage
@@ -14,5 +17,5 @@ services:
       - controller
     volumes:
       - ./GameViewer/:/var/GameViewer
-      - ./.env:/.env
+      - ./.env:/var/GameViewer/.env
     command: tail -f /dev/null

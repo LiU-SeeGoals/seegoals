@@ -5,6 +5,8 @@ GREEN='\033[1;32m'
 CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
+PULL_PACKAGES=true
+
 #-----------------------------------------------------------#
 #    Function to check if a submodule is initialized        #
 #-----------------------------------------------------------#
@@ -47,18 +49,26 @@ echo -e "${CYAN}Other website: ${RED}http://localhost:8082/${NC}"
 
 
 # Define Docker Compose command based on the user's choice
+# First action in each is to pull the image for the services being run through pre-compiled versions (see docker pull commands)
 case $choice in
   1)
+    docker pull ghcr.io/liu-seegoals/game-viewer:latest
+    docker pull ghcr.io/liu-seegoals/controller:latest
+
     echo "Starting base configuration..."
     docker compose -p base-config up -d
     ;;
   2)
+    docker pull ghcr.io/liu-seegoals/game-viewer:latest
+
     echo "Starting with local controller and GHCR game viewer..."
     docker compose -f docker-compose.yml -f docker-compose.local-controller.yml -p controller-config up --build -d --force-recreate
     echo -e "${CYAN}Entering controller container...${NC}"
     docker compose -p controller-config exec controller sh
     ;;
   3)
+    docker pull ghcr.io/liu-seegoals/controller:latest
+
     echo "Starting with local game viewer and GHCR controller..."
     docker compose -f docker-compose.yml -f docker-compose.local-gameviewer.yml -p gameviewer-config up --build -d --force-recreate
     echo -e "${CYAN}Entering game-viewer container...${NC}"
@@ -70,6 +80,8 @@ case $choice in
     echo -e "${GREEN}Both controller and game-viewer are local. Not entering any container.${NC}"
     ;;
   5)
+    docker pull ghcr.io/liu-seegoals/ssl-vision:latest
+
     echo "Starting setup for real cameras"
     docker compose -f docker-compose.yml -f docker-compose.real-robots.yml -f docker-compose.local-controller.yml -p gameviewer-config up --build -d --force-recreate
     echo -e "${GREEN}Everything is started. Not entering any container.${NC}"

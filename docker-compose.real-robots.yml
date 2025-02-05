@@ -27,3 +27,20 @@ services:
       - simulation
     depends_on:
       - sim
+  game-viewer:
+    image: ghcr.io/liu-seegoals/game-viewer:latest
+    tty: true
+    environment:
+      - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
+      - SSL_VISION_MULTICAST_PORT=${SSL_REAL_VISION_MAIN_PORT}
+    ports:
+      - "5173:5173"
+      - "3000:3000"
+    networks:
+      - simulation
+    depends_on:
+      - controller
+    container_name: viewer
+    restart: "no"
+    volumes:
+      - ./.env:/var/GameViewer/.env
