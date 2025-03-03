@@ -53,8 +53,6 @@ services:
 
   controller:
     image: ghcr.io/liu-seegoals/controller:latest
-    env_file:
-      - .env
     tty: true
     ports:
       - "8080:8080"

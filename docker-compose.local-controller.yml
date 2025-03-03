@@ -3,8 +3,6 @@ services:
   controller:
     build: ./controller
     image: ""
-    env_file:
-      - .env
     tty: true
     ports:
       - "8080:8080"
