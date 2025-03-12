@@ -7,9 +7,8 @@ services:
     restart: no
     stdin_open: true
     container_name: vision
+    network_mode: "host"
     tty: true
-    networks:
-      - simulation
 
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
@@ -20,11 +19,8 @@ services:
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
       - "-address"
       - ":${WEB_VISION_UI_PORT}"
-    ports:
-      - "${WEB_VISION_UI_PORT}:${WEB_VISION_UI_PORT}"
+    network_mode: "host"
     container_name: ssl-viewer
-    networks:
-      - simulation
     depends_on:
       - sim
   game-viewer:
@@ -33,11 +29,7 @@ services:
     environment:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
       - SSL_VISION_MULTICAST_PORT=${SSL_REAL_VISION_MAIN_PORT}
-    ports:
-      - "5173:5173"
-      - "3000:3000"
-    networks:
-      - simulation
+    network_mode: "host"
     depends_on:
       - controller
     container_name: viewer

@@ -1,0 +1,34 @@
+services:
+
+  ssl-vision-client:
+    image: robocupssl/ssl-vision-client:latest
+    command:
+      - "-visionAddress"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
+      - "-visualizationAddress"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
+      - "-address"
+      - ":${WEB_VISION_UI_PORT}"
+    network_mode: "host"
+    restart: "no"
+    container_name: ssl-viewer
+    depends_on:
+      - sim
+  
+  ssl-game-controller:
+    x-enabled: false
+
+  sim:
+    x-enabled: false
+
+  controller:
+    image: ghcr.io/liu-seegoals/controller:latest
+    tty: true
+    network_mode: "host"
+    container_name: ai
+    restart: "no"
+    volumes:
+      - ./.env:/var/controller/.env
+
+  game-viewer:
+    x-enabled: false

@@ -7,11 +7,7 @@ services:
     environment:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
       - SSL_VISION_MULTICAST_PORT=${SSL_SIM_VISION_MAIN_PORT}
-    ports:
-      - "5173:5173"
-      - "3000:3000" # Honest to God I have no idea why this is required. But without it the backend server listening to multicast cannot talk to the webpage
-    networks:
-      - simulation
+    network_mode: "host"
     container_name: viewer
     depends_on:
       - controller

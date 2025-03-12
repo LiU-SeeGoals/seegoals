@@ -4,12 +4,8 @@ services:
     build: ./controller
     image: ""
     tty: true
-    ports:
-      - "8080:8080"
-      - "2345:2345"  # Expose Delve debugger port to host
+    network_mode: "host"
     container_name: ai
-    networks:
-      - simulation
     volumes:
       - ./controller/:/var/controller
       - ./.env:/.env # If this was /var/controller/.env then the .env file will be volumed into the workspace of GameViewer

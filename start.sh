@@ -19,6 +19,7 @@ else
   echo "Submodules are not initialized. Initializing now..."
   # Initialize and update submodules without changing their current state
   git submodule update --init --recursive --no-fetch --remote
+  git status --ignore-submodules=all
   echo "Submodules initialized and updated."
 fi
 
@@ -40,7 +41,8 @@ echo "2. Local controller"
 echo "3. local game viewer"
 echo "4. Local controller and local game viewer"
 echo "5. Start real SSL vision (only on fetdator)"
-read -p "Enter your choice (1-5): " choice
+echo "6. Start for competition"
+read -p "Enter your choice (1-6): " choice
 
 echo -e "${CYAN}closing previous containers${NC}"
 docker stop $(docker ps -q) # close all previous running containers 
@@ -87,6 +89,11 @@ case $choice in
 
     echo "Starting setup for real cameras"
     docker compose -f docker-compose.yml -f docker-compose.real-robots.yml -f docker-compose.local-controller.yml -p gameviewer-config up --build -d --force-recreate
+    echo -e "${GREEN}Everything is started. Not entering any container.${NC}"
+    ;;
+  6)
+    echo "Starting setup for real cameras"
+    docker compose -f docker-compose.yml -f docker-compose.competition.yml -p gameviewer-config up -d
     echo -e "${GREEN}Everything is started. Not entering any container.${NC}"
     ;;
   *)
