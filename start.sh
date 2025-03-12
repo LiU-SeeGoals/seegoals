@@ -52,17 +52,18 @@ echo -e "${CYAN}Other website: ${RED}http://localhost:8082/${NC}"
 # First action in each is to pull the image for the services being run through pre-compiled versions (see docker pull commands)
 case $choice in
   1)
-    docker pull ghcr.io/liu-seegoals/game-viewer:latest
-    docker pull ghcr.io/liu-seegoals/controller:latest
+    #docker pull ghcr.io/liu-seegoals/game-viewer:latest
+    #docker pull ghcr.io/liu-seegoals/controller:latest
 
     echo "Starting base configuration..."
     docker compose -p base-config up -d
     ;;
   2)
-    docker pull ghcr.io/liu-seegoals/game-viewer:latest
+    #docker pull ghcr.io/liu-seegoals/game-viewer:latest
 
     echo "Starting with local controller and GHCR game viewer..."
-    docker compose -f docker-compose.yml -f docker-compose.local-controller.yml -p controller-config up --build -d --force-recreate
+    #docker compose -f docker-compose.yml -f docker-compose.local-controller.yml -p controller-config up --build -d --force-recreate
+    docker compose -f docker-compose.yml -f docker-compose.local-controller.yml -p controller-config up -d
     echo -e "${CYAN}Entering controller container...${NC}"
     docker compose -p controller-config exec controller sh
     ;;

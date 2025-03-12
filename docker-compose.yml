@@ -2,62 +2,37 @@ services:
 
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
-    command:
-      - "-visionAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
-      - "-visualizationAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
-      - "-address"
-      - ":${WEB_VISION_UI_PORT}"
-    ports:
-      - "${WEB_VISION_UI_PORT}:${WEB_VISION_UI_PORT}"
-    networks:
-      - simulation
+    network_mode: "host"
     restart: "no"
     container_name: ssl-viewer
-    depends_on:
-      - sim
-  
+    #depends_on:
+      #- sim
+
   ssl-game-controller:
     image: robocupssl/ssl-game-controller:latest
-    command:
-      - "-visionAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
-      - "-trackerAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
-      - "-publishAddress"
-      - "${GC_PUBLISH_ADDR}:${GC_PUBLISH_PORT}"
-      - "-address"
-      - ":${WEB_GC_UI_PORT}"
-    ports:
-      - "${WEB_GC_UI_PORT}:${WEB_GC_UI_PORT}"
-    networks:
-      - simulation
+    network_mode: "host"
     container_name: game-controller
-    depends_on:
-      - sim
+    #depends_on:
+      #- sim
     restart: "no"
     volumes:
       - ./config/:/config
       - ./data/:/data
 
-  sim:
-    image: roboticserlangen/simulatorcli:commit-6a4e1c06533b
-    environment:
-      GEOMETRY: "2020B"
-      REALISM: "RC2021"
-    networks:
-      - simulation
-    restart: "no"
-    container_name: vision
+        #sim:
+        #  image: roboticserlangen/simulatorcli:commit-6a4e1c06533b
+        #  environment:
+        #    GEOMETRY: "2020B"
+        #    REALISM: "RC2021"
+        #  networks:
+        #    - simulation
+        #  restart: "no"
+        #  container_name: vision
 
   controller:
     image: ghcr.io/liu-seegoals/controller:latest
     tty: true
-    ports:
-      - "8080:8080"
-    networks:
-      - simulation
+    network_mode: "host"
     container_name: ai
     restart: "no"
     volumes:
@@ -66,21 +41,10 @@ services:
   game-viewer:
     image: ghcr.io/liu-seegoals/game-viewer:latest
     tty: true
-    environment:
-      - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
-      - SSL_VISION_MULTICAST_PORT=${SSL_SIM_VISION_MAIN_PORT}
-    ports:
-      - "5173:5173"
-      - "3000:3000"
-    networks:
-      - simulation
+    network_mode: "host"
     depends_on:
       - controller
     container_name: viewer
     restart: "no"
     volumes:
       - ./.env:/.env
-
-networks:
-  simulation:
-    driver: bridge
