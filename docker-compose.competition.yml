@@ -12,23 +12,19 @@ services:
     network_mode: "host"
     restart: "no"
     container_name: ssl-viewer
-    depends_on:
-      - sim
-  
+
   ssl-game-controller:
-    x-enabled: false
+    profiles:
+      - donotstart
 
   sim:
-    x-enabled: false
+    profiles:
+      - donotstart
 
-  controller:
-    image: ghcr.io/liu-seegoals/controller:latest
-    tty: true
-    network_mode: "host"
-    container_name: ai
-    restart: "no"
-    volumes:
-      - ./.env:/var/controller/.env
+  vision:
+    profiles:
+      - donotstart
 
   game-viewer:
-    x-enabled: false
+    profiles:
+      - donotstart
