@@ -3,12 +3,10 @@
 RED='\033[1;31m'
 GREEN='\033[1;32m'
 CYAN='\033[1;36m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 PULL_PACKAGES=true
-BASESTATION=123
-
-OPTIONS=$(getopt -o sni: --long setup,no-network,base-ip: -- "$@")
+OPTIONS=$(getopt -o snh --long setup,no-network,help -- "$@")
 
 eval set -- "$OPTIONS"
 
@@ -23,7 +21,7 @@ while [ "$1" != "" ]; do
             shift
             ;;
         -h | --help)
-            echo "lol"
+            echo "lul"
             exit 0
             ;;
     esac
