@@ -1,23 +1,22 @@
-#-----------------------------------
-# User container enter options
-#-----------------------------------
+CONTAINERS=($(docker ps --format "{{.Names}}" | sort))
 
-# List all running containers with numbered labels
+if [ -z "$CONTAINERS" ]; then
+    echo "No running containers..."
+    exit 1
+fi
+
 echo -e "${ORANGE}Select a container to enter:${NC}"
-running_containers=($(docker ps --format "{{.Names}}"))
-for i in "${!running_containers[@]}"; do
-    echo -e "${ORANGE}[$i] ${running_containers[$i]}${NC}"
+for i in "${!CONTAINERS[@]}"; do
+    echo -e "${ORANGE}[$i] ${CONTAINERS[$i]}${NC}"
 done
 
-# Prompt the user to select a container
 echo -e "${ORANGE}Enter the number of the container you want to access:${NC}"
-read -r container_index
+read -r INDEX
 
-# Check if the entered index is valid
-if [[ -n "${running_containers[$container_index]}" ]]; then
-    selected_container="${running_containers[$container_index]}"
-    echo -e "${GREEN}Attaching to container '$selected_container'...${NC}"
-    docker exec -it "$selected_container" /bin/bash
+if [[ -n "${CONTAINERS[$INDEX]}" ]]; then
+    SELECTED="${CONTAINERS[$INDEX]}"
+    echo -e "${GREEN}Attaching to container '$SELECTED'...${NC}"
+    docker exec -it "$SELECTED" /bin/bash
 else
-    echo -e "${RED}Invalid selection. Exiting.${NC}"
+    echo -e "${RED}Invalid selection...${NC}"
 fi

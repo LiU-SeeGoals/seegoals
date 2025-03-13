@@ -13,6 +13,17 @@ services:
     restart: "no"
     container_name: ssl-viewer
 
+  controller:
+    build: ./controller
+    image: ""
+    tty: true
+    network_mode: "host"
+    container_name: ai
+    volumes:
+      - ./controller/:/var/controller
+      - ./.env:/.env # If this was /var/controller/.env then the .env file will be volumed into the workspace of GameViewer
+    command: tail -f /dev/null
+
   ssl-game-controller:
     profiles:
       - donotstart
