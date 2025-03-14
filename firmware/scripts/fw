@@ -1,0 +1,29 @@
+#!/bin/bash
+
+OPTIONS=$(getopt -o snh --long setup,no-network,help -- "$@")
+
+eval set -- "$OPTIONS"
+
+# TODO: shift completion for commands
+# TODO: add shift completion on serial devices (autotranslate to id's?)
+
+while [ "$1" != "" ]; do
+    case $1 in
+        c | connect)
+            shift 1
+            picocom --help > /dev/null 2>&1
+            if ! command -v minicom > /dev/null 2>&1; then
+                echo "Install minicom..."
+                exit 1
+            fi
+            picocom --b 115200 "$1"
+            echo "$1"
+            ;;
+        -h | --help)
+            echo "lul"
+            exit 0
+            ;;
+    esac
+    shift
+done
+

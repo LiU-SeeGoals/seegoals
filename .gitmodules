@@ -4,3 +4,9 @@
 [submodule "controller"]
 	path = controller
 	url = git@github.com:LiU-SeeGoals/controller.git
+[submodule "firmware/basestation"]
+	path = firmware/basestation
+	url = git@github.com:LiU-SeeGoals/basestation.git
+[submodule "firmware/robot"]
+	path = firmware/robot
+	url = git@github.com:LiU-SeeGoals/robot.git

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Get the current working directory
+CURRENT_DIR="$(pwd)"
+
+# Function to add the directory to a shell profile if not already added
+add_to_profile() {
+    local profile="$1"
+    if [ -f "$profile" ]; then
+        # Check if the path is already in the profile
+        if ! grep -q "export PATH=.*$CURRENT_DIR" "$profile"; then
+            echo "export PATH=\"$CURRENT_DIR:\$PATH\"" >> "$profile"
+            echo "Added $CURRENT_DIR to PATH in $profile"
+        else
+            echo "$CURRENT_DIR is already in PATH in $profile"
+        fi
+    fi
+}
+
+# Add to Bash profile if Bash exists
+if command -v bash > /dev/null 2>&1; then
+    add_to_profile "$HOME/.bashrc"
+fi
+
+# Add to Zsh profile if Zsh exists
+if command -v zsh > /dev/null 2>&1; then
+    add_to_profile "$HOME/.zshrc"
+fi
+
+# Apply changes immediately
+if [ -n "$BASH_VERSION" ]; then
+    source "$HOME/.bashrc"
+elif [ -n "$ZSH_VERSION" ]; then
+    source "$HOME/.zshrc"
+fi
