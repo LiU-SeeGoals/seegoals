@@ -93,7 +93,7 @@ case $choice in
         docker compose -f docker-compose.yml -f docker-compose.local-controller.yml -p controller-config up
     fi
     echo -e "${CYAN}Entering controller container...${NC}"
-    docker compose -p controller-config exec controller sh
+    docker compose -p controller-config exec controller sh -c "cd cmd && exec sh"
     ;;
   3)
     echo "Starting with local game viewer and GHCR controller..."
