@@ -1,4 +1,3 @@
-# docker-compose.local-controller.yml (local controller, GHCR game viewer)
 services:
   controller:
     build: ./controller
@@ -9,4 +8,3 @@ services:
     volumes:
       - ./controller/:/var/controller
       - ./.env:/.env # If this was /var/controller/.env then the .env file will be volumed into the workspace of GameViewer
-    command: tail -f /dev/null
