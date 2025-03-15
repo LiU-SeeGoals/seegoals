@@ -1,5 +1,4 @@
 services:
-
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
     command:

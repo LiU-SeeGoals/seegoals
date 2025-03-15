@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+import sys
+
+from enum import Enum
+
+RED = "\033[1;31m"
+GREEN = "\033[1;32m"
+CYAN = "\033[1;36m"
+NC = "\033[0m"
+
+flags = {
+    "rebuild": ["--rebuild"],
+    "no-network": ["--no-network"],
+    "help": ["-h", "--help"]
+}
+
+choices = [
+    {
+        "choice-text": "Base configuraiton (pre built images for both services)"
+    },
+    {
+        "choice-text": "Local controller"
+    },
+    {
+        "choice-text": "Local game viewer"
+    },
+    {
+        "choice-text": "Local controller and local game viewer"
+    },
+    {
+        "choice-text": "Start real SSL vision (only on fetdator)"
+    },
+    {
+        "choice-text": "Start for competition"
+    },
+]
+
+class Container(Enum):
+    CONTROLLER = 0
+    GAME_VIEWER = 1
+
+def check_submodule_status():
+    result = subprocess.run(["git", "submodule", "status"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return b"^-" not in result.stdout
+
+def remove_old_containers():
+    print("removing previous containers", file=sys.stderr)
+    subprocess.run(["docker", "remove", "ssl-viewer"], stderr=subprocess.PIPE)
+    subprocess.run(["docker", "remove", "game-controller"], stderr=subprocess.PIPE)
+    subprocess.run(["docker", "remove", "vision"], stderr=subprocess.PIPE)
+    subprocess.run(["docker", "remove", "ai"], stderr=subprocess.PIPE)
+    subprocess.run(["docker", "remove", "viewer"], stderr=subprocess.PIPE)
+
+def execute_choice(choice, rebuild):
+    print(f"Starting: {choices[choice]['choice-text']}")
+    cmd = []
+    container_to_enter = None
+
+    if choice == 0:
+        cmd = [
+            "docker", "compose",
+            "-p", "base-config",
+            "up", "-d"
+        ]
+
+        if network:
+            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
+            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/controller:latest"])
+    elif choice == 1:
+        cmd = [
+            "docker", "compose",
+            "-f", "docker-compose.yml",
+            "-f", "docker-compose.local-controller.yml",
+            "-p", "controller-config",
+            "up", "-d"
+        ]
+
+        container_to_enter = Container.CONTROLLER
+
+        if network:
+            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
+    elif choice == 2:
+        cmd = [
+            "docker", "compose",
+            "-f", "docker-compose.yml",
+            "-f", "docker-compose.local-gameviewer.yml",
+            "-p", "gameviewer-config",
+            "up",
+        ]
+
+        container_to_enter = Container.GAME_VIEWER
+
+        if network:
+            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/controller:latest"])
+    elif choice == 3:
+        cmd = [
+            "docker", "compose",
+            "-f", "docker-compose.yml",
+            "-f", "docker-compose.local-controller.yml",
+            "-f", "docker-compose.local-gameviewer.yml",
+            "-p", "dev-config", "up",
+        ]
+    elif choice == 4:
+        cmd = [
+            "docker", "compose",
+            "-f", "docker-compose.yml",
+            "-f", "docker-compose.real-robots.yml",
+            "-f", "docker-compose.local-controller.yml",
+            "-p", "gameviewer-config", "up",
+        ]
+
+        subprocess.run(["sudo", "ip", "addr", "add", "192.168.1.10/24", "dev", "enp4s0"])
+
+        if network:
+            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/ssl-vision:latest"])
+            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
+    elif choice == 5:
+        cmd = [
+            "docker", "compose",
+            "-f", "docker-compose.yml",
+            "-f", "docker-compose.competition.yml",
+            "-p", "gameviewer-config", "up", "-d"
+        ]
+
+        container_to_enter = Container.CONTROLLER
+    else:
+        print(f"Invalid choice {choice}. Exiting...")
+        sys.exit(1)
+
+    if rebuild:
+        cmd += [ "--build", "-d", "--force-recreate" ]
+
+    subprocess.run(cmd)
+
+    if container_to_enter is not None:
+        enter_container(container_to_enter)
+
+def enter_container(container):
+    if container == Container.CONTROLLER:
+        print(f"{CYAN}Entering controller container...{NC}")
+        subprocess.run([
+            "docker", "compose",
+            "-p", "controller-config",
+            "exec", "controller",
+            "sh", "-c", "cd cmd && exec sh"
+        ])
+    elif container == Container.GAME_VIEWER:
+        print(f"{CYAN}Entering game-viewer container...{NC}")
+        subprocess.run([
+            "docker",
+            "compose",
+            "-p", "gameviewer-config",
+            "exec", "game-viewer",
+            "bash"
+        ])
+
+if __name__ == "__main__":
+    choice = None
+    rebuild = False
+    network = True
+
+    # Parse options
+    if len(sys.argv) > 1:
+        if sys.argv[1].isdigit():
+            choice = int(sys.argv[1]) - 1
+            sys.argv.pop(1)
+
+        for arg in sys.argv[1:]:
+            if arg in flags["rebuild"]:
+                print("Rebuilding containers...")
+                rebuild = True
+            if arg in flags["no-network"]:
+                network = False
+            elif arg in flags["help"]:
+                print("lul")
+                sys.exit(0)
+
+    # Choose what to do
+    if not choice:
+        print("Select Docker Compose configuration:")
+        for i, choice in enumerate(choices):
+            print(f"{i+1}. {choice['choice-text']}")
+
+        choice = int(input(f"Enter your choice (1-{len(choices)}): ")) - 1
+
+    if not(1 <= choice <= len(choices)):
+        print("Invalid choice!")
+        sys.exit(1)
+
+    # Cleanup
+    if check_submodule_status():
+        print("All submodules are already initialized.")
+    else:
+        print("Submodules are not initialized. Initializing now...")
+        subprocess.run(["git", "submodule", "update", "--init", "--recursive", "--no-fetch", "--remote"])
+        subprocess.run(["git", "status", "--ignore-submodules=all"])
+        print("Submodules initialized and updated.")
+
+    remove_old_containers()
+
+    # Execute
+    print(f"{CYAN}closing previous containers{NC}")
+    subprocess.run(["./kill.sh"], shell=True)
+
+    print(f"{CYAN}Website: {RED}http://localhost:5173/{NC}")
+    print(f"{CYAN}Other website: {RED}http://localhost:8082/{NC}")
+
+    execute_choice(choice, rebuild)
