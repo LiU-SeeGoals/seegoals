@@ -3,6 +3,7 @@
 import os
 import subprocess
 import sys
+import shutil
 
 RED = "\033[1;31m"
 GREEN = "\033[1;32m"
@@ -13,6 +14,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 env_path = os.path.join(script_dir, "..", "..", "environment.ini")
 docker_dir = os.path.join(script_dir, "..", "..", "docker")
 
+
 def read_env_ini():
     env_vars = {}
     with open(env_path, "r") as f:
@@ -22,6 +24,7 @@ def read_env_ini():
                 key, value = line.split("=", 1)
                 env_vars[key.strip()] = value.strip().strip('"').strip("'")
     return env_vars
+
 
 envs = read_env_ini()
 
@@ -41,7 +44,7 @@ remove_containers = [
 ]
 
 choices = [
-    { # Choice 1
+    {  # Choice 1
         "choice-text": "Base configuraiton (pre built images for both services)",
         "pull_images": [
             "ghcr.io/liu-seegoals/game-viewer:latest",
@@ -54,7 +57,7 @@ choices = [
         ],
         "container_to_enter": None,
     },
-    { # Choice 2
+    {  # Choice 2
         "choice-text": "Local controller, enter ai",
         "pull_images": [
             "ghcr.io/liu-seegoals/game-viewer:latest"
@@ -68,7 +71,7 @@ choices = [
         ],
         "container_to_enter": envs.get("DOCKER_NAME_AI")
     },
-    { # Choice 3
+    {  # Choice 3
         "choice-text": "Local game viewer, enter game viewer",
         "pull_images": [
             "ghcr.io/liu-seegoals/controller:latest"
@@ -82,7 +85,7 @@ choices = [
         ],
         "container_to_enter": envs.get("DOCKER_NAME_VIEWER")
     },
-    { # Choice 4
+    {  # Choice 4
         "choice-text": "Local controller and local game viewer",
         "pull_images": [],
         "docker_cmd": [
@@ -94,7 +97,7 @@ choices = [
         ],
         "container_to_enter": None
     },
-    { # Choice 5
+    {  # Choice 5
         "choice-text": "Start real SSL vision (only on fetdator)",
         "pull_images": [
             "ghcr.io/liu-seegoals/ssl-vision:latest"
@@ -109,7 +112,7 @@ choices = [
         ],
         "container_to_enter": None
     },
-    { # Choice 6
+    {  # Choice 6
         "choice-text": "Start for competition",
         "pull_images": [],
         "docker_cmd": [
@@ -122,11 +125,13 @@ choices = [
     },
 ]
 
+
 def check_submodule_status():
-    result = subprocess.run(["git", "submodule", "status"], 
+    result = subprocess.run(["git", "submodule", "status"],
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     return b"^-" not in result.stdout
+
 
 def remove_old_containers():
     print("Removing old containers:", file=sys.stderr)
@@ -135,6 +140,7 @@ def remove_old_containers():
         subprocess.run(["docker", "rm", container],
                        stdout=subprocess.DEVNULL,
                        stderr=subprocess.DEVNULL)
+
 
 def execute_choice(choice, rebuild):
     choice -= 1
@@ -145,7 +151,7 @@ def execute_choice(choice, rebuild):
     container_to_enter = choices[choice]["container_to_enter"]
 
     if rebuild:
-        docker_cmd += [ "--build", "-d", "--force-recreate" ]
+        docker_cmd += ["--build", "-d", "--force-recreate"]
 
     if network:
         for image in choices[choice]["pull_images"]:
@@ -161,10 +167,31 @@ def execute_choice(choice, rebuild):
         print(f"{CYAN}Entering {container_to_enter} container...{NC}")
         subprocess.run(cmd)
 
+
 if __name__ == "__main__":
     choice = None
     rebuild = False
     network = True
+
+    docker_path = shutil.which("docker")
+    if docker_path is None:
+        print("You need to install docker...")
+        sys.exit(1)
+
+    result = subprocess.run(["docker", "ps"],
+                            stderr=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            text=True)
+    if result.returncode == 1:
+        print(f"Couldn't run \"docker ps\":\n{result.stderr}")
+        sys.exit(1)
+
+    result = subprocess.run(["docker", "compose", "version"],
+                            stderr=subprocess.DEVNULL,
+                            stdout=subprocess.DEVNULL)
+    if result.returncode == 1:
+        print("You need to install docker compose...")
+        sys.exit(1)
 
     # Parse options
     if len(sys.argv) > 1:
@@ -190,7 +217,7 @@ if __name__ == "__main__":
 
         choice = int(input(f"Enter your choice (1-{len(choices)}): "))
 
-    if not(1 <= choice <= len(choices)):
+    if not (1 <= choice <= len(choices)):
         print(f"Invalid choice {choice}...")
         sys.exit(1)
 
