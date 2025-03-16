@@ -1,17 +1,15 @@
-# docker-compose.local-gameviewer.yml (GHCR controller, local game viewer)
 services:
   game-viewer:
     build: ./GameViewer
-    image: ""
-    tty: true
-    environment:
-      - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
-      - SSL_VISION_MULTICAST_PORT=${SSL_SIM_VISION_MAIN_PORT}
-    network_mode: "host"
     container_name: ${DOCKER_NAME_VIEWER}
     depends_on:
       - controller
+    environment:
+      - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
+      - SSL_VISION_MULTICAST_PORT=${SSL_VISION_SIM_MAIN_PORT}
     volumes:
       - ../software/GameViewer/:/var/GameViewer
       - ../environment.ini:/var/GameViewer/.env
+    network_mode: "host"
+    tty: true
     command: tail -f /dev/null

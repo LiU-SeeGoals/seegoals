@@ -4,11 +4,11 @@ services:
     container_name: ${DOCKER_NAME_SSL_VIEWER}
     command:
       - "-visionAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
       - "-visualizationAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
       - "-address"
-      - ":${WEB_VISION_UI_PORT}"
+      - ":${SSL_VISION_CLIENT_PORT}"
     restart: "no"
     network_mode: "host"
 
@@ -17,13 +17,13 @@ services:
     container_name: ${DOCKER_NAME_GAME_CONTROLLER}
     command:
       - "-visionAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
       - "-trackerAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
       - "-publishAddress"
-      - "${GC_PUBLISH_ADDR}:${GC_PUBLISH_PORT}"
+      - "${SSL_GAME_CONTROLLER_PUBLISH_ADDR}:${SSL_GAME_CONTROLLER_PUBLISH_PORT}"
       - "-address"
-      - ":${WEB_GC_UI_PORT}"
+      - ":${SSL_GAME_CONTROLLER_PORT}"
     restart: "no"
     volumes:
       - ../software/config/:/config
@@ -54,7 +54,7 @@ services:
     tty: true
     environment:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
-      - SSL_VISION_MULTICAST_PORT=${SSL_SIM_VISION_MAIN_PORT}
+      - SSL_VISION_MULTICAST_PORT=${SSL_VISION_SIM_MAIN_PORT}
     network_mode: "host"
     depends_on:
       - controller

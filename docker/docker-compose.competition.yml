@@ -3,11 +3,11 @@ services:
     image: robocupssl/ssl-vision-client:latest
     command:
       - "-visionAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
       - "-visualizationAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
       - "-address"
-      - ":${WEB_VISION_UI_PORT}"
+      - ":${SSL_VISION_CLIENT_PORT}"
     network_mode: "host"
     restart: "no"
     container_name: ${DOCKER_NAME_SSL_VIEWER}

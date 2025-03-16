@@ -14,11 +14,11 @@ services:
     image: robocupssl/ssl-vision-client:latest
     command:
       - "-visionAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_REAL_VISION_MAIN_PORT}"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_REAL_MAIN_PORT}"
       - "-visualizationAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
       - "-address"
-      - ":${WEB_VISION_UI_PORT}"
+      - ":${SSL_VISION_CLIENT_PORT}"
     network_mode: "host"
     container_name: ${DOCKER_NAME_SSL_VIEWER}
     depends_on:
@@ -29,7 +29,7 @@ services:
     tty: true
     environment:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
-      - SSL_VISION_MULTICAST_PORT=${SSL_REAL_VISION_MAIN_PORT}
+      - SSL_VISION_MULTICAST_PORT=${SSL_VISION_REAL_MAIN_PORT}
     network_mode: "host"
     depends_on:
       - controller
