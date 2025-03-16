@@ -1,3 +1,5 @@
+#!/bin/bash
+
 STOP=$(docker ps --format "{{.Names}}" | sort)
 COUNT=$(echo "$STOP" | wc -l)
 
@@ -6,7 +8,7 @@ if [ -z "$STOP" ]; then
 else
     echo "Killing $COUNT containers:"
     while IFS= read -r container; do
-        echo -e "\tStopping $container..."
+        echo -e "\t$container..."
         docker kill "$container" > /dev/null 2>&1
     done <<< "$STOP"
 fi
