@@ -1,0 +1,2 @@
+[submodule "firmware/robot"]
+	url = git@github.com:LiU-SeeGoals/robot.git
