@@ -1,15 +1,8 @@
 services:
   game-viewer:
+    image: ""
     build: ../software/GameViewer
-    container_name: ${DOCKER_NAME_GAME_VIEWER}
-    depends_on:
-      - ai
-    environment:
-      - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
-      - SSL_VISION_MULTICAST_PORT=${SSL_VISION_SIM_MAIN_PORT}
     volumes:
       - ../software/GameViewer/:/var/GameViewer
-      - ../environment.ini:/var/GameViewer/.env
-    network_mode: "host"
     tty: true
     command: tail -f /dev/null

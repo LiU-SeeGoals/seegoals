@@ -28,51 +28,64 @@ def read_env_ini():
 
 envs = read_env_ini()
 
+AI = envs.get("DOCKER_NAME_AI")
+GW = envs.get("DOCKER_NAME_GAME_VIEWER")
+VISION_CLIENT = envs.get("DOCKER_NAME_SSL_VISION_CLIENT")
+GC = envs.get("DOCKER_NAME_SSL_GAME_CONTROLLER")
+VISION = envs.get("DOCKER_NAME_SSL_VISION")
+SIM = envs.get("DOCKER_NAME_ER_SIM")
+
 flags = {
     "rebuild": ["--rebuild"],
     "no-network": ["--no-network"],
     "help": ["-h", "--help"]
 }
 
-remove_containers = [
-    envs.get("DOCKER_NAME_AI"),
-    envs.get("DOCKER_NAME_GAME_VIEWER"),
-    envs.get("DOCKER_NAME_SSL_VISION_CLIENT"),
-    envs.get("DOCKER_NAME_SSL_GAME_CONTROLLER"),
-    envs.get("DOCKER_NAME_SSL_VISION"),
-    envs.get("DOCKER_NAME_ER_SIM"),
-]
+remove_containers = [AI, GW, VISION_CLIENT, GC, VISION, SIM]
 
 choices = [
+    {  # Choice 0
+        "choice-text": "Rebuild local images.",
+        "pull_images": [],
+        "docker_cmd": [
+            "docker", "compose",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
+            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
+            "-p", "dev-config", "build", "--no-cache"
+        ],
+        "container_to_enter": None,
+    },
     {  # Choice 1
-        "choice-text": "Base configuraiton (pre built images for both services)",
+        "choice-text": f"'{AI}' and '{GW}' from pre-built images.",
         "pull_images": [
-            "ghcr.io/liu-seegoals/game-viewer:latest",
-            "ghcr.io/liu-seegoals/controller:latest"
+            "ghcr.io/liu-seegoals/controller:latest",
+            "ghcr.io/liu-seegoals/game-viewer:latest"
         ],
         "docker_cmd": [
-            "docker", "compose", "-f", f"{docker_dir}/docker-compose.yml",
+            "docker", "compose",
+            "-f", f"{docker_dir}/docker-compose.yml",
             "-p", "base-config",
             "up", "-d"
         ],
         "container_to_enter": None,
     },
     {  # Choice 2
-        "choice-text": "Local controller, enter ai",
+        "choice-text": f"Local '{AI}' files, enter '{AI}' container.",
         "pull_images": [
             "ghcr.io/liu-seegoals/game-viewer:latest"
         ],
         "docker_cmd": [
-            "docker", "compose", "-f", f"{docker_dir}/docker-compose.yml",
+            "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
-            "-f", f"{docker_dir}/docker-compose.local-controller.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-p", "controller-config",
             "up", "-d"
         ],
-        "container_to_enter": envs.get("DOCKER_NAME_AI")
+        "container_to_enter": AI
     },
     {  # Choice 3
-        "choice-text": "Local game viewer, enter game viewer",
+        "choice-text": f"Local '{GW}' files, enter '{GW}' container.",
         "pull_images": [
             "ghcr.io/liu-seegoals/controller:latest"
         ],
@@ -81,24 +94,24 @@ choices = [
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-p", "gameviewer-config",
-            "up",
+            "up", "-d"
         ],
-        "container_to_enter": envs.get("DOCKER_NAME_VIEWER")
+        "container_to_enter": GW
     },
     {  # Choice 4
-        "choice-text": "Local controller and local game viewer",
+        "choice-text": f"Local '{AI}' and '{GW}' files.",
         "pull_images": [],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
-            "-f", f"{docker_dir}/docker-compose.local-controller.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-p", "dev-config", "up",
         ],
         "container_to_enter": None
     },
     {  # Choice 5
-        "choice-text": "Start real SSL vision (only on fetdator)",
+        "choice-text": f"Start real '{VISION}' (only on fetdator).",
         "pull_images": [
             "ghcr.io/liu-seegoals/ssl-vision:latest"
             "ghcr.io/liu-seegoals/game-viewer:latest"
@@ -107,17 +120,19 @@ choices = [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.real-robots.yml",
-            "-f", f"{docker_dir}/docker-compose.local-controller.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-p", "gameviewer-config", "up",
         ],
         "container_to_enter": None
     },
     {  # Choice 6
-        "choice-text": "Start for competition",
+        "choice-text": "Start for competition,",
         "pull_images": [],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
+            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-f", f"{docker_dir}/docker-compose.competition.yml",
             "-p", "gameviewer-config", "up", "-d"
         ],
@@ -143,7 +158,6 @@ def remove_old_containers():
 
 
 def execute_choice(choice, rebuild):
-    choice -= 1
     print(f"Starting: {choices[choice]['choice-text']}")
 
     container_to_enter = None
@@ -162,7 +176,7 @@ def execute_choice(choice, rebuild):
     if choices[choice]["container_to_enter"] is not None:
         cmd = [
             "docker", "exec", "-it", container_to_enter,
-            "sh", "-c", "cd cmd && exec sh"
+            "sh", "-c", "exec sh"
         ]
         print(f"{CYAN}Entering {container_to_enter} container...{NC}")
         subprocess.run(cmd)
@@ -213,11 +227,11 @@ if __name__ == "__main__":
     if not choice:
         print("Select Docker Compose configuration:")
         for i, choice in enumerate(choices):
-            print(f"{i+1}. {choice['choice-text']}")
+            print(f"{i}. {choice['choice-text']}")
 
-        choice = int(input(f"Enter your choice (1-{len(choices)}): "))
+        choice = int(input(f"Enter your choice (0-{len(choices)}): "))
 
-    if not (1 <= choice <= len(choices)):
+    if not (0 <= choice <= len(choices)):
         print(f"Invalid choice {choice}...")
         sys.exit(1)
 
@@ -232,7 +246,7 @@ if __name__ == "__main__":
 
     # Execute
     print(f"{CYAN}Killing previous containers...{NC}")
-    subprocess.run([f"{script_dir}/kill-sg"], shell=True)
+    subprocess.run([f"{script_dir}/sg-kill"], shell=True)
 
     remove_old_containers()
 

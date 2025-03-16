@@ -7,6 +7,11 @@ if [ -z "$CONTAINERS" ]; then
     exit 1
 fi
 
+if [ -n "$1" ]; then
+    docker exec -it "$1" /bin/bash
+    exit 0
+fi
+
 echo -e "${ORANGE}Select a container to enter:${NC}"
 for i in "${!CONTAINERS[@]}"; do
     echo -e "${ORANGE}[$i] ${CONTAINERS[$i]}${NC}"

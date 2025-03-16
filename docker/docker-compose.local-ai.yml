@@ -1,11 +1,9 @@
 services:
   ai:
-    build: ../software/controller
     image: ""
-    container_name: ${DOCKER_NAME_AI}
+    build: ../software/controller
     volumes:
       - ../software/controller/:/var/controller
-      - ../environment.ini:/.env
-    network_mode: "host"
+    working_dir: /var/controller/cmd
     tty: true
     command: tail -f /dev/null
