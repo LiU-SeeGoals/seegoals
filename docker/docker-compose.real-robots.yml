@@ -1,17 +1,18 @@
 services:
   sim:
     image: ghcr.io/liu-seegoals/ssl-vision:latest
+    container_name: ${DOCKER_NAME_SSL_VISION}
     # container_name: ssl_vision_container
     environment:
       - QT_QPA_PLATFORM=offscreen
     restart: no
     stdin_open: true
-    container_name: ${DOCKER_NAME_VISION}
     network_mode: "host"
     tty: true
 
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
+    container_name: ${DOCKER_NAME_SSL_VISION_CLIENT}
     command:
       - "-visionAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_REAL_MAIN_PORT}"
@@ -20,7 +21,6 @@ services:
       - "-address"
       - ":${SSL_VISION_CLIENT_PORT}"
     network_mode: "host"
-    container_name: ${DOCKER_NAME_SSL_VIEWER}
     depends_on:
       - sim
 
@@ -33,7 +33,7 @@ services:
     network_mode: "host"
     depends_on:
       - controller
-    container_name: ${DOCKER_NAME_VIEWER}
+    container_name: ${DOCKER_NAME_GAME_VIEWER}
     restart: "no"
     volumes:
       - ../environment.ini:/var/GameViewer/.env

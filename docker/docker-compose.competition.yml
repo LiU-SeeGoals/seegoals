@@ -1,6 +1,7 @@
 services:
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
+    container_name: ${DOCKER_NAME_SSL_VISION_CLIENT}
     command:
       - "-visionAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
@@ -10,17 +11,16 @@ services:
       - ":${SSL_VISION_CLIENT_PORT}"
     network_mode: "host"
     restart: "no"
-    container_name: ${DOCKER_NAME_SSL_VIEWER}
 
   controller:
     build: ./controller
-    image: ""
-    tty: true
-    network_mode: "host"
     container_name: ${DOCKER_NAME_AI}
+    image: ""
+    network_mode: "host"
     volumes:
       - ../software/controller/:/var/controller
       - ../environment.ini:/.env
+    tty: true
     command: tail -f /dev/null
 
   ssl-game-controller:

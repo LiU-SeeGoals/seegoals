@@ -1,7 +1,7 @@
 services:
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
-    container_name: ${DOCKER_NAME_SSL_VIEWER}
+    container_name: ${DOCKER_NAME_SSL_VISION_CLIENT}
     command:
       - "-visionAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
@@ -14,7 +14,7 @@ services:
 
   ssl-game-controller:
     image: robocupssl/ssl-game-controller:latest
-    container_name: ${DOCKER_NAME_GAME_CONTROLLER}
+    container_name: ${DOCKER_NAME_SSL_GAME_CONTROLLER}
     command:
       - "-visionAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
@@ -32,7 +32,7 @@ services:
 
   sim:
     image: roboticserlangen/simulatorcli:commit-6a4e1c06533b
-    container_name: ${DOCKER_NAME_VISION}
+    container_name: ${DOCKER_NAME_ER_SIM}
     environment:
       GEOMETRY: "2020"
       REALISM: "RC2021"
@@ -50,7 +50,7 @@ services:
 
   game-viewer:
     image: ghcr.io/liu-seegoals/game-viewer:latest
-    container_name: ${DOCKER_NAME_VIEWER}
+    container_name: ${DOCKER_NAME_GAME_VIEWER}
     tty: true
     environment:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}

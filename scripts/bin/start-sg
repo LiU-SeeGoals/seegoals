@@ -32,13 +32,13 @@ flags = {
 }
 
 remove_containers = [
-    envs.get("DOCKER_NAME_SSL_VIEWER"),
-    envs.get("DOCKER_NAME_GAME_CONTROLLER"),
-    envs.get("DOCKER_NAME_VISION"),
     envs.get("DOCKER_NAME_AI"),
-    envs.get("DOCKER_NAME_VIEWER"),
+    envs.get("DOCKER_NAME_GAME_VIEWER"),
+    envs.get("DOCKER_NAME_SSL_VISION_CLIENT"),
+    envs.get("DOCKER_NAME_SSL_GAME_CONTROLLER"),
+    envs.get("DOCKER_NAME_SSL_VISION"),
+    envs.get("DOCKER_NAME_ER_SIM"),
 ]
-
 
 choices = [
     { # Choice 1
