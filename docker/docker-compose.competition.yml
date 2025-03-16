@@ -10,17 +10,17 @@ services:
       - ":${WEB_VISION_UI_PORT}"
     network_mode: "host"
     restart: "no"
-    container_name: ssl-viewer
+    container_name: ${DOCKER_NAME_SSL_VIEWER}
 
   controller:
     build: ./controller
     image: ""
     tty: true
     network_mode: "host"
-    container_name: ai
+    container_name: ${DOCKER_NAME_AI}
     volumes:
-      - ./controller/:/var/controller
-      - ./.env:/.env # If this was /var/controller/.env then the .env file will be volumed into the workspace of GameViewer
+      - ../software/controller/:/var/controller
+      - ../environment.ini:/.env
     command: tail -f /dev/null
 
   ssl-game-controller:

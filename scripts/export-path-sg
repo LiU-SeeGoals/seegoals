@@ -1,32 +1,32 @@
 #!/bin/bash
 
-new_path="$(pwd)"
+bin_path="$(pwd)/bin"
 
-read -p "Are you sure '$new_path' is the correct path to add to \$PATH? (y/n): " confirm
+if echo "$PATH" | grep -q "$bin_path"; then
+    echo -e "The path \"$bin_path\" already in \$PATH:\n"
+    echo "$PATH"
+    exit 0
+fi
+
+read -p "Are you sure '$bin_path' is the correct path to add to \$PATH? (y/n): " confirm
 
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
     echo "Exiting..."
     exit 1
 fi
 
-if echo "$PATH" | grep -q "$new_path"; then
-    echo -e "The path \"$new_path\" already in \$PATH:\n"
-    echo "$PATH"
-    exit 0
-fi
-
-echo "Adding SeeGoals scripts folder to paths..."
+echo "Adding SeeGoals bin folder to paths..."
 
 update_path_in_file() {
     local file=$1
     if test -f "$file"; then
-        if grep -q "$new_path" "$file"; then
-            echo -e "\t$new_path is already in $file"
+        if grep -q "$bin_path" "$file"; then
+            echo -e "\t$bin_path is already in $file"
         else
             echo -e "\tBacking up to $file.bak and replacing the export PATH line..."
             cp "$file" "$file.bak"
 
-            echo "export PATH=\"\$PATH:$new_path\"" >> "$file"
+            echo "export PATH=\"\$PATH:$bin_path\"" >> "$file"
             echo -e "\tAdded export PATH in $file"
 
             echo -e "\tReloading shell..."

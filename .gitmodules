@@ -1,6 +1,3 @@
-[submodule "GameViewer"]
-	path = GameViewer
-	url = git@github.com:LiU-SeeGoals/GameViewer.git
 [submodule "controller"]
 	path = controller
 	url = git@github.com:LiU-SeeGoals/controller.git
@@ -10,3 +7,9 @@
 [submodule "firmware/robot"]
 	path = firmware/robot
 	url = git@github.com:LiU-SeeGoals/robot.git
+[submodule "software/controller"]
+	path = software/controller
+	url = git@github.com:LiU-SeeGoals/controller.git
+[submodule "software/GameViewer"]
+	path = software/GameViewer
+	url = git@github.com:LiU-SeeGoals/GameViewer.git

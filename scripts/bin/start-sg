@@ -1,14 +1,29 @@
 #!/usr/bin/env python3
+
 import os
 import subprocess
 import sys
-
-from enum import Enum
 
 RED = "\033[1;31m"
 GREEN = "\033[1;32m"
 CYAN = "\033[1;36m"
 NC = "\033[0m"
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(script_dir, "..", "..", "environment.ini")
+docker_dir = os.path.join(script_dir, "..", "..", "docker")
+
+def read_env_ini():
+    env_vars = {}
+    with open(env_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                key, value = line.split("=", 1)
+                env_vars[key.strip()] = value.strip().strip('"').strip("'")
+    return env_vars
+
+envs = read_env_ini()
 
 flags = {
     "rebuild": ["--rebuild"],
@@ -37,30 +52,31 @@ choices = [
     },
 ]
 
-class Container(Enum):
-    CONTROLLER = 0
-    GAME_VIEWER = 1
+containers = [
+    envs.get("DOCKER_NAME_SSL_VIEWER"),
+    envs.get("DOCKER_NAME_GAME_CONTROLLER"),
+    envs.get("DOCKER_NAME_VISION"),
+    envs.get("DOCKER_NAME_AI"),
+    envs.get("DOCKER_NAME_VIEWER"),
+]
 
 def check_submodule_status():
     result = subprocess.run(["git", "submodule", "status"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return b"^-" not in result.stdout
 
 def remove_old_containers():
-    print("removing previous containers", file=sys.stderr)
-    subprocess.run(["docker", "remove", "ssl-viewer"], stderr=subprocess.PIPE)
-    subprocess.run(["docker", "remove", "game-controller"], stderr=subprocess.PIPE)
-    subprocess.run(["docker", "remove", "vision"], stderr=subprocess.PIPE)
-    subprocess.run(["docker", "remove", "ai"], stderr=subprocess.PIPE)
-    subprocess.run(["docker", "remove", "viewer"], stderr=subprocess.PIPE)
+    print("Removing old containers...", file=sys.stderr)
+    for container in containers:
+        subprocess.run(["docker", "rm", container], stderr=subprocess.PIPE)
 
 def execute_choice(choice, rebuild):
-    print(f"Starting: {choices[choice]['choice-text']}")
-    cmd = []
+    print(f"Starting: {choices[choice-1]['choice-text']}")
+
     container_to_enter = None
 
-    if choice == 0:
-        cmd = [
-            "docker", "compose",
+    if choice == 1:
+        docker_cmd = [
+            "docker", "compose", "-f", f"{docker_dir}/docker-compose.yml",
             "-p", "base-config",
             "up", "-d"
         ]
@@ -68,46 +84,46 @@ def execute_choice(choice, rebuild):
         if network:
             subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
             subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/controller:latest"])
-    elif choice == 1:
-        cmd = [
-            "docker", "compose",
-            "-f", "docker-compose.yml",
-            "-f", "docker-compose.local-controller.yml",
+    elif choice == 2:
+        docker_cmd = [
+            "docker", "compose", "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.local-controller.yml",
             "-p", "controller-config",
             "up", "-d"
         ]
 
-        container_to_enter = Container.CONTROLLER
+        container_to_enter = envs.get("DOCKER_NAME_AI")
 
         if network:
             subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
-    elif choice == 2:
-        cmd = [
+    elif choice == 3:
+        docker_cmd = [
             "docker", "compose",
-            "-f", "docker-compose.yml",
-            "-f", "docker-compose.local-gameviewer.yml",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-p", "gameviewer-config",
             "up",
         ]
 
-        container_to_enter = Container.GAME_VIEWER
+        container_to_enter = envs.get("DOCKER_NAME_VIEWER")
 
         if network:
             subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/controller:latest"])
-    elif choice == 3:
-        cmd = [
+    elif choice == 4:
+        docker_cmd = [
             "docker", "compose",
-            "-f", "docker-compose.yml",
-            "-f", "docker-compose.local-controller.yml",
-            "-f", "docker-compose.local-gameviewer.yml",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.local-controller.yml",
+            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-p", "dev-config", "up",
         ]
-    elif choice == 4:
-        cmd = [
+    elif choice == 5:
+        docker_cmd = [
             "docker", "compose",
-            "-f", "docker-compose.yml",
-            "-f", "docker-compose.real-robots.yml",
-            "-f", "docker-compose.local-controller.yml",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.real-robots.yml",
+            "-f", f"{docker_dir}/docker-compose.local-controller.yml",
             "-p", "gameviewer-config", "up",
         ]
 
@@ -116,45 +132,31 @@ def execute_choice(choice, rebuild):
         if network:
             subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/ssl-vision:latest"])
             subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
-    elif choice == 5:
-        cmd = [
+    elif choice == 6:
+        docker_cmd = [
             "docker", "compose",
-            "-f", "docker-compose.yml",
-            "-f", "docker-compose.competition.yml",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.competition.yml",
             "-p", "gameviewer-config", "up", "-d"
         ]
 
-        container_to_enter = Container.CONTROLLER
+        container_to_enter = envs.get("DOCKER_NAME_AI")
     else:
         print(f"Invalid choice {choice}. Exiting...")
         sys.exit(1)
 
     if rebuild:
-        cmd += [ "--build", "-d", "--force-recreate" ]
+        docker_cmd += [ "--build", "-d", "--force-recreate" ]
 
-    subprocess.run(cmd)
+    subprocess.run(docker_cmd)
 
     if container_to_enter is not None:
-        enter_container(container_to_enter)
-
-def enter_container(container):
-    if container == Container.CONTROLLER:
-        print(f"{CYAN}Entering controller container...{NC}")
-        subprocess.run([
-            "docker", "compose",
-            "-p", "controller-config",
-            "exec", "controller",
+        cmd = [
+            "docker", "exec", "-it", f"{container_to_enter}",
             "sh", "-c", "cd cmd && exec sh"
-        ])
-    elif container == Container.GAME_VIEWER:
-        print(f"{CYAN}Entering game-viewer container...{NC}")
-        subprocess.run([
-            "docker",
-            "compose",
-            "-p", "gameviewer-config",
-            "exec", "game-viewer",
-            "bash"
-        ])
+        ]
+        print(f"{CYAN}Entering {container_to_enter} container...{NC}")
+        subprocess.run(cmd)
 
 if __name__ == "__main__":
     choice = None
@@ -164,7 +166,7 @@ if __name__ == "__main__":
     # Parse options
     if len(sys.argv) > 1:
         if sys.argv[1].isdigit():
-            choice = int(sys.argv[1]) - 1
+            choice = int(sys.argv[1])
             sys.argv.pop(1)
 
         for arg in sys.argv[1:]:
@@ -183,7 +185,7 @@ if __name__ == "__main__":
         for i, choice in enumerate(choices):
             print(f"{i+1}. {choice['choice-text']}")
 
-        choice = int(input(f"Enter your choice (1-{len(choices)}): ")) - 1
+        choice = int(input(f"Enter your choice (1-{len(choices)}): "))
 
     if not(1 <= choice <= len(choices)):
         print("Invalid choice!")
@@ -198,13 +200,10 @@ if __name__ == "__main__":
         subprocess.run(["git", "status", "--ignore-submodules=all"])
         print("Submodules initialized and updated.")
 
-    remove_old_containers()
-
     # Execute
-    print(f"{CYAN}closing previous containers{NC}")
-    subprocess.run(["./kill.sh"], shell=True)
+    print(f"{CYAN}Killing previous containers...{NC}")
+    subprocess.run([f"{script_dir}/kill-sg"], shell=True)
 
-    print(f"{CYAN}Website: {RED}http://localhost:5173/{NC}")
-    print(f"{CYAN}Other website: {RED}http://localhost:8082/{NC}")
+    remove_old_containers()
 
     execute_choice(choice, rebuild)

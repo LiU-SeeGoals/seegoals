@@ -1,7 +1,7 @@
 services:
-
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
+    container_name: ${DOCKER_NAME_SSL_VIEWER}
     command:
       - "-visionAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
@@ -9,12 +9,12 @@ services:
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
       - "-address"
       - ":${WEB_VISION_UI_PORT}"
-    network_mode: "host"
     restart: "no"
-    container_name: ssl-viewer
-  
+    network_mode: "host"
+
   ssl-game-controller:
     image: robocupssl/ssl-game-controller:latest
+    container_name: ${DOCKER_NAME_GAME_CONTROLLER}
     command:
       - "-visionAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_SIM_VISION_MAIN_PORT}"
@@ -24,33 +24,33 @@ services:
       - "${GC_PUBLISH_ADDR}:${GC_PUBLISH_PORT}"
       - "-address"
       - ":${WEB_GC_UI_PORT}"
-    network_mode: "host"
-    container_name: game-controller
     restart: "no"
     volumes:
-      - ./config/:/config
-      - ./data/:/data
+      - ../software/config/:/config
+      - ../software/data/:/data
+    network_mode: "host"
 
   sim:
     image: roboticserlangen/simulatorcli:commit-6a4e1c06533b
+    container_name: ${DOCKER_NAME_VISION}
     environment:
       GEOMETRY: "2020"
       REALISM: "RC2021"
-    network_mode: "host"
     restart: "no"
-    container_name: vision
+    network_mode: "host"
 
   controller:
     image: ghcr.io/liu-seegoals/controller:latest
+    container_name: ${DOCKER_NAME_AI}
     tty: true
-    network_mode: "host"
-    container_name: ai
     restart: "no"
     volumes:
-      - ./.env:/var/controller/.env
+      - ../environment.ini:/var/controller/.env
+    network_mode: "host"
 
   game-viewer:
     image: ghcr.io/liu-seegoals/game-viewer:latest
+    container_name: ${DOCKER_NAME_VIEWER}
     tty: true
     environment:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
@@ -58,7 +58,6 @@ services:
     network_mode: "host"
     depends_on:
       - controller
-    container_name: viewer
     restart: "no"
     volumes:
-      - ./.env:/.env
+      - ../environment.ini:/.env

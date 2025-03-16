@@ -8,10 +8,10 @@ services:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
       - SSL_VISION_MULTICAST_PORT=${SSL_SIM_VISION_MAIN_PORT}
     network_mode: "host"
-    container_name: viewer
+    container_name: ${DOCKER_NAME_VIEWER}
     depends_on:
       - controller
     volumes:
-      - ./GameViewer/:/var/GameViewer
-      - ./.env:/var/GameViewer/.env
+      - ../software/GameViewer/:/var/GameViewer
+      - ../environment.ini:/var/GameViewer/.env
     command: tail -f /dev/null

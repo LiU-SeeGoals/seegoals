@@ -1,3 +1,5 @@
+#!/bin/bash
+
 CONTAINERS=($(docker ps --format "{{.Names}}" | sort))
 
 if [ -z "$CONTAINERS" ]; then
