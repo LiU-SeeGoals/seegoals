@@ -1,6 +1,6 @@
 services:
   game-viewer:
-    build: ./GameViewer
+    build: ../software/GameViewer
     container_name: ${DOCKER_NAME_GAME_VIEWER}
     depends_on:
       - controller

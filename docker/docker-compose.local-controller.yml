@@ -1,6 +1,6 @@
 services:
   controller:
-    build: ./controller
+    build: ../software/controller
     image: ""
     container_name: ${DOCKER_NAME_AI}
     volumes:
