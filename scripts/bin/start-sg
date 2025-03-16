@@ -55,7 +55,7 @@ choices = [
         "container_to_enter": None,
     },
     { # Choice 2
-        "choice-text": "Local controller",
+        "choice-text": "Local controller, enter ai",
         "pull_images": [
             "ghcr.io/liu-seegoals/game-viewer:latest"
         ],
@@ -69,7 +69,7 @@ choices = [
         "container_to_enter": envs.get("DOCKER_NAME_AI")
     },
     { # Choice 3
-        "choice-text": "Local game viewer",
+        "choice-text": "Local game viewer, enter game viewer",
         "pull_images": [
             "ghcr.io/liu-seegoals/controller:latest"
         ],
