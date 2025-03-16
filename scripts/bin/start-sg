@@ -31,28 +31,7 @@ flags = {
     "help": ["-h", "--help"]
 }
 
-choices = [
-    {
-        "choice-text": "Base configuraiton (pre built images for both services)"
-    },
-    {
-        "choice-text": "Local controller"
-    },
-    {
-        "choice-text": "Local game viewer"
-    },
-    {
-        "choice-text": "Local controller and local game viewer"
-    },
-    {
-        "choice-text": "Start real SSL vision (only on fetdator)"
-    },
-    {
-        "choice-text": "Start for competition"
-    },
-]
-
-containers = [
+remove_containers = [
     envs.get("DOCKER_NAME_SSL_VIEWER"),
     envs.get("DOCKER_NAME_GAME_CONTROLLER"),
     envs.get("DOCKER_NAME_VISION"),
@@ -60,99 +39,123 @@ containers = [
     envs.get("DOCKER_NAME_VIEWER"),
 ]
 
-def check_submodule_status():
-    result = subprocess.run(["git", "submodule", "status"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return b"^-" not in result.stdout
 
-def remove_old_containers():
-    print("Removing old containers...", file=sys.stderr)
-    for container in containers:
-        subprocess.run(["docker", "rm", container], stderr=subprocess.PIPE)
-
-def execute_choice(choice, rebuild):
-    print(f"Starting: {choices[choice-1]['choice-text']}")
-
-    container_to_enter = None
-
-    if choice == 1:
-        docker_cmd = [
+choices = [
+    { # Choice 1
+        "choice-text": "Base configuraiton (pre built images for both services)",
+        "pull_images": [
+            "ghcr.io/liu-seegoals/game-viewer:latest",
+            "ghcr.io/liu-seegoals/controller:latest"
+        ],
+        "docker_cmd": [
             "docker", "compose", "-f", f"{docker_dir}/docker-compose.yml",
             "-p", "base-config",
             "up", "-d"
-        ]
-
-        if network:
-            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
-            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/controller:latest"])
-    elif choice == 2:
-        docker_cmd = [
+        ],
+        "container_to_enter": None,
+    },
+    { # Choice 2
+        "choice-text": "Local controller",
+        "pull_images": [
+            "ghcr.io/liu-seegoals/game-viewer:latest"
+        ],
+        "docker_cmd": [
             "docker", "compose", "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.local-controller.yml",
             "-p", "controller-config",
             "up", "-d"
-        ]
-
-        container_to_enter = envs.get("DOCKER_NAME_AI")
-
-        if network:
-            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
-    elif choice == 3:
-        docker_cmd = [
+        ],
+        "container_to_enter": envs.get("DOCKER_NAME_AI")
+    },
+    { # Choice 3
+        "choice-text": "Local game viewer",
+        "pull_images": [
+            "ghcr.io/liu-seegoals/controller:latest"
+        ],
+        "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-p", "gameviewer-config",
             "up",
-        ]
-
-        container_to_enter = envs.get("DOCKER_NAME_VIEWER")
-
-        if network:
-            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/controller:latest"])
-    elif choice == 4:
-        docker_cmd = [
+        ],
+        "container_to_enter": envs.get("DOCKER_NAME_VIEWER")
+    },
+    { # Choice 4
+        "choice-text": "Local controller and local game viewer",
+        "pull_images": [],
+        "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.local-controller.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-p", "dev-config", "up",
-        ]
-    elif choice == 5:
-        docker_cmd = [
+        ],
+        "container_to_enter": None
+    },
+    { # Choice 5
+        "choice-text": "Start real SSL vision (only on fetdator)",
+        "pull_images": [
+            "ghcr.io/liu-seegoals/ssl-vision:latest"
+            "ghcr.io/liu-seegoals/game-viewer:latest"
+        ],
+        "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.real-robots.yml",
             "-f", f"{docker_dir}/docker-compose.local-controller.yml",
             "-p", "gameviewer-config", "up",
-        ]
-
-        subprocess.run(["sudo", "ip", "addr", "add", "192.168.1.10/24", "dev", "enp4s0"])
-
-        if network:
-            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/ssl-vision:latest"])
-            subprocess.run(["docker", "pull", "ghcr.io/liu-seegoals/game-viewer:latest"])
-    elif choice == 6:
-        docker_cmd = [
+        ],
+        "container_to_enter": None
+    },
+    { # Choice 6
+        "choice-text": "Start for competition",
+        "pull_images": [],
+        "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.competition.yml",
             "-p", "gameviewer-config", "up", "-d"
-        ]
+        ],
+        "container_to_enter": envs.get("DOCKER_NAME_AI")
+    },
+]
 
-        container_to_enter = envs.get("DOCKER_NAME_AI")
-    else:
-        print(f"Invalid choice {choice}. Exiting...")
-        sys.exit(1)
+def check_submodule_status():
+    result = subprocess.run(["git", "submodule", "status"], 
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    return b"^-" not in result.stdout
+
+def remove_old_containers():
+    print("Removing old containers:", file=sys.stderr)
+    for container in remove_containers:
+        print(f"\t{container}...")
+        subprocess.run(["docker", "rm", container],
+                       stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
+
+def execute_choice(choice, rebuild):
+    choice -= 1
+    print(f"Starting: {choices[choice]['choice-text']}")
+
+    container_to_enter = None
+    docker_cmd = choices[choice]["docker_cmd"]
+    container_to_enter = choices[choice]["container_to_enter"]
 
     if rebuild:
         docker_cmd += [ "--build", "-d", "--force-recreate" ]
 
+    if network:
+        for image in choices[choice]["pull_images"]:
+            subprocess.run(["docker", "pull", image])
+
     subprocess.run(docker_cmd)
 
-    if container_to_enter is not None:
+    if choices[choice]["container_to_enter"] is not None:
         cmd = [
-            "docker", "exec", "-it", f"{container_to_enter}",
+            "docker", "exec", "-it", container_to_enter,
             "sh", "-c", "cd cmd && exec sh"
         ]
         print(f"{CYAN}Entering {container_to_enter} container...{NC}")
@@ -188,7 +191,7 @@ if __name__ == "__main__":
         choice = int(input(f"Enter your choice (1-{len(choices)}): "))
 
     if not(1 <= choice <= len(choices)):
-        print("Invalid choice!")
+        print(f"Invalid choice {choice}...")
         sys.exit(1)
 
     # Cleanup
