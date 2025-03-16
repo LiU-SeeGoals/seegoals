@@ -22,7 +22,7 @@ services:
       - ":${SSL_VISION_CLIENT_PORT}"
     network_mode: "host"
     depends_on:
-      - sim
+      - er-sim
 
   game-viewer:
     image: ghcr.io/liu-seegoals/game-viewer:latest
@@ -32,7 +32,7 @@ services:
       - SSL_VISION_MULTICAST_PORT=${SSL_VISION_REAL_MAIN_PORT}
     network_mode: "host"
     depends_on:
-      - controller
+      - ai
     container_name: ${DOCKER_NAME_GAME_VIEWER}
     restart: "no"
     volumes:

@@ -1,4 +1,27 @@
 services:
+  ai:
+    image: ghcr.io/liu-seegoals/controller:latest
+    container_name: ${DOCKER_NAME_AI}
+    tty: true
+    restart: "no"
+    volumes:
+      - ../environment.ini:/var/controller/.env
+    network_mode: "host"
+
+  game-viewer:
+    image: ghcr.io/liu-seegoals/game-viewer:latest
+    container_name: ${DOCKER_NAME_GAME_VIEWER}
+    depends_on:
+      - ai
+    environment:
+      - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
+      - SSL_VISION_MULTICAST_PORT=${SSL_VISION_SIM_MAIN_PORT}
+    network_mode: "host"
+    volumes:
+      - ../environment.ini:/.env
+    restart: "no"
+    tty: true
+
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
     container_name: ${DOCKER_NAME_SSL_VISION_CLIENT}
@@ -23,41 +46,18 @@ services:
       - "-publishAddress"
       - "${SSL_GAME_CONTROLLER_PUBLISH_ADDR}:${SSL_GAME_CONTROLLER_PUBLISH_PORT}"
       - "-address"
-      - ":${SSL_GAME_CONTROLLER_PORT}"
+      - ":${SSL_GAME_CONTROLLER_UI_PORT}"
     restart: "no"
     volumes:
       - ../software/config/:/config
       - ../software/data/:/data
     network_mode: "host"
 
-  sim:
+  er-sim:
     image: roboticserlangen/simulatorcli:commit-6a4e1c06533b
     container_name: ${DOCKER_NAME_ER_SIM}
     environment:
-      GEOMETRY: "2020"
+      GEOMETRY: ${SIM_GEOMETRY}
       REALISM: "RC2021"
     restart: "no"
     network_mode: "host"
-
-  controller:
-    image: ghcr.io/liu-seegoals/controller:latest
-    container_name: ${DOCKER_NAME_AI}
-    tty: true
-    restart: "no"
-    volumes:
-      - ../environment.ini:/var/controller/.env
-    network_mode: "host"
-
-  game-viewer:
-    image: ghcr.io/liu-seegoals/game-viewer:latest
-    container_name: ${DOCKER_NAME_GAME_VIEWER}
-    tty: true
-    environment:
-      - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
-      - SSL_VISION_MULTICAST_PORT=${SSL_VISION_SIM_MAIN_PORT}
-    network_mode: "host"
-    depends_on:
-      - controller
-    restart: "no"
-    volumes:
-      - ../environment.ini:/.env

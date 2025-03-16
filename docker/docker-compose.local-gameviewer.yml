@@ -3,7 +3,7 @@ services:
     build: ../software/GameViewer
     container_name: ${DOCKER_NAME_GAME_VIEWER}
     depends_on:
-      - controller
+      - ai
     environment:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
       - SSL_VISION_MULTICAST_PORT=${SSL_VISION_SIM_MAIN_PORT}

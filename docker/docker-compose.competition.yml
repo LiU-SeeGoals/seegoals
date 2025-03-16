@@ -12,7 +12,7 @@ services:
     network_mode: "host"
     restart: "no"
 
-  controller:
+  ai:
     build: ../software/controller
     container_name: ${DOCKER_NAME_AI}
     image: ""

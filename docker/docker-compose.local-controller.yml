@@ -1,5 +1,5 @@
 services:
-  controller:
+  ai:
     build: ../software/controller
     image: ""
     container_name: ${DOCKER_NAME_AI}
