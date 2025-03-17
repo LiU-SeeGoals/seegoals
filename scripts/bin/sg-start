@@ -119,7 +119,7 @@ choices = [
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
-            "-f", f"{docker_dir}/docker-compose.real-robots.yml",
+            "-f", f"{docker_dir}/docker-compose.fetdatorn.yml",
             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-p", "gameviewer-config", "up",
         ],

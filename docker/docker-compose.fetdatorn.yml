@@ -15,3 +15,17 @@ services:
       - SSL_VISION_MULTICAST_PORT=${SSL_VISION_REAL_MAIN_PORT}
     depends_on:
       - ${DOCKER_NAME_AI}
+
+  ssl-vision-client:
+    command:
+      - "-visionAddress"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_REAL_MAIN_PORT}"
+
+  ssl-game-controller:
+    command:
+      - "-visionAddress"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_REAL_MAIN_PORT}"
+      - "-trackerAddress"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_REAL_MAIN_PORT}"
+    depends_on:
+      - ${DOCKER_NAME_SSL_VISION}
