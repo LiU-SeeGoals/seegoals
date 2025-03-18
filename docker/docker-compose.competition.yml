@@ -1,4 +1,10 @@
 services:
+  ai:
+    network_mode: "host"
+
+  game-viewer:
+    network_mode: "host"
+
   ssl-game-controller:
     profiles:
       - donotstart

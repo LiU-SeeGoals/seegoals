@@ -126,7 +126,7 @@ choices = [
         "container_to_enter": None
     },
     {  # Choice 6
-        "choice-text": "Start for competition,",
+        "choice-text": "Start for competition.",
         "pull_images": [],
         "docker_cmd": [
             "docker", "compose",
@@ -138,6 +138,19 @@ choices = [
         ],
         "container_to_enter": envs.get("DOCKER_NAME_AI")
     },
+    {  # Choice 7
+        "choice-text": "Start local simulation.",
+        "pull_images": [],
+        "docker_cmd": [
+            "docker", "compose",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
+            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
+            "-f", f"{docker_dir}/docker-compose.simulation.yml",
+            "-p", "simulation-config", "up", "-d"
+        ],
+        "container_to_enter": None
+    }
 ]
 
 

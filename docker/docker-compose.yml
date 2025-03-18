@@ -4,7 +4,6 @@ services:
     container_name: ${DOCKER_NAME_AI}
     env_file: ../environment.ini
     restart: "no"
-    network_mode: "host"
 
   game-viewer:
     image: ghcr.io/liu-seegoals/game-viewer:latest
@@ -16,7 +15,6 @@ services:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
       - SSL_VISION_MULTICAST_PORT=${SSL_VISION_SIM_MAIN_PORT}
     restart: "no"
-    network_mode: "host"
 
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
@@ -29,7 +27,6 @@ services:
       - "-address"
       - ":${SSL_VISION_CLIENT_PORT}"
     restart: "no"
-    network_mode: "host"
 
   ssl-game-controller:
     image: robocupssl/ssl-game-controller:latest
@@ -47,7 +44,6 @@ services:
     volumes:
       - ../software/GameController/config/:/config
       - ../software/GameController/data/:/data
-    network_mode: "host"
 
   er-sim:
     image: roboticserlangen/simulatorcli:commit-6a4e1c06533b
@@ -56,4 +52,3 @@ services:
       GEOMETRY: ${SIM_GEOMETRY}
       REALISM: ${SIM_REALISM}
     restart: "no"
-    network_mode: "host"
