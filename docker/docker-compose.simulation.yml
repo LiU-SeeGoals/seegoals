@@ -1,11 +1,16 @@
 services:
   ai:
+    ports:
+      # Below is needed to receive AI on localhost, can't get networks to work...
+      - "${VITE_AI_GAME_VIEWER_SOCKET_PORT}:${VITE_AI_GAME_VIEWER_SOCKET_PORT}"
     networks:
       - simulation-network
 
   game-viewer:
     ports:
       - "${GAME_VIEWER_PORT}:${GAME_VIEWER_PORT}"
+      # Below has to be exposed to receive multicast, not sure why...
+      - "${VITE_SSL_VISION_WS_PORT}:${VITE_SSL_VISION_WS_PORT}"
     networks:
       - simulation-network
 

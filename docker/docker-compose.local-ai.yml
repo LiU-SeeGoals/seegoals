@@ -3,6 +3,7 @@ services:
     image: ""
     build: ../software/controller
     volumes:
+      - ../environment.ini:/var/controller/.env
       - ../software/controller/:/var/controller
     working_dir: /var/controller/cmd
     tty: true

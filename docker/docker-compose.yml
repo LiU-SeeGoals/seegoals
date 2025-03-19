@@ -2,19 +2,22 @@ services:
   ai:
     image: ghcr.io/liu-seegoals/controller:latest
     container_name: ${DOCKER_NAME_AI}
-    env_file: ../environment.ini
     restart: "no"
+    volumes:
+      - ../environment.ini:/var/controller/.env
 
   game-viewer:
     image: ghcr.io/liu-seegoals/game-viewer:latest
     container_name: ${DOCKER_NAME_GAME_VIEWER}
-    env_file: ../environment.ini
     depends_on:
       - ${DOCKER_NAME_AI}
     environment:
       - SSL_VISION_MULTICAST_ADDR=${SSL_VISION_MULTICAST_ADDR}
       - SSL_VISION_MULTICAST_PORT=${SSL_VISION_SIM_MAIN_PORT}
     restart: "no"
+    env_file: ../environment.ini
+    volumes:
+      - ../environment.ini:/var/GameViewer/.env
 
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
