@@ -1,0 +1,54 @@
+#!/bin/bash
+
+session="seegoals"
+
+tab_names=(
+    ""
+    "SG"
+    "AI"
+    "GW"
+    "BS"
+    "RB"
+)
+
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+
+tab_dirs=(
+    ""
+    "$script_dir/../../"
+    "$script_dir/../../software/controller"
+    "$script_dir/../../software/GameViewer"
+    "$script_dir/../../firmware/basestation"
+    "$script_dir/../../firmware/robot"
+)
+
+tmux new-session -d -s "$session" -n "${tab_names[1]}"
+
+for i in "${!tab_names[@]}"; do
+    if [[ $i -gt 1 ]]; then
+        tmux new-window -t "$session":"$i" -n "${tab_names[$i]}"
+    fi
+done
+
+for i in "${!tab_names[@]}"; do
+    if [[ $i -gt 0 ]]; then
+        tmux select-window -t "$session":"$i"
+        tmux send-keys "cd ${tab_dirs[$i]}" C-m
+        tmux send-keys "nvim +'Neotree toggle'" C-m
+        tmux split-window -v -p 15
+        tmux send-keys "cd ${tab_dirs[$i]}" C-m
+
+        # Add two more vertical panes for the "GW" window
+        if [[ "${tab_names[$i]}" == "GW" ]]; then
+            tmux split-window -h -p 50
+            tmux send-keys "cd ${tab_dirs[$i]}" C-m
+            tmux select-pane -t "$session":"$i".2
+        fi
+
+        tmux select-pane -t "$session":"$i".1
+    fi
+done
+
+tmux select-window -t "$session":1
+tmux attach-session -t "$session"
+

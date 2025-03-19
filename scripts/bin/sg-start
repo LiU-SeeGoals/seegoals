@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 sys.exit(0)
 
     # Choose what to do
-    if not choice:
+    if choice is None:
         print("Select Docker Compose configuration:")
         for i, choice in enumerate(choices):
             print(f"{i}. {choice['choice-text']}")
@@ -235,7 +235,7 @@ if __name__ == "__main__":
         print(f"Invalid choice {choice}...")
         sys.exit(1)
 
-    # Cleanup
+    # Update submodules
     if check_submodule_status():
         print("All submodules are already initialized.")
     else:
@@ -244,10 +244,10 @@ if __name__ == "__main__":
         subprocess.run(["git", "status", "--ignore-submodules=all"])
         print("Submodules initialized and updated.")
 
-    # Execute
+    # Cleanup
     print(f"{CYAN}Killing previous containers...{NC}")
     subprocess.run([f"{script_dir}/sg-kill"], shell=True)
-
     remove_old_containers()
 
+    # Execute
     execute_choice(choice, rebuild)
