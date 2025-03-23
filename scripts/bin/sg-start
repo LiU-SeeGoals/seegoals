@@ -190,7 +190,7 @@ def execute_choice(choice, rebuild):
             subprocess.run(["docker", "pull", image])
 
     if VERBOSE:
-        print(f"Docker CMD: {" ".join(docker_cmd)}")
+        print(f"Docker CMD: {' '.join(docker_cmd)}")
 
     subprocess.run(docker_cmd)
 
