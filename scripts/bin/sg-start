@@ -87,14 +87,17 @@ choices = [
         "container_to_enter": AI
     },
     {  # Choice 3
-        "choice-text": f"Local '{GW}' files, enter '{GW}' container.",
+        "choice-text": f"Local '{GW}' files, enter '{GW}' container (webdev).",
         "pull_images": [
             "ghcr.io/liu-seegoals/controller:latest"
         ],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.simulation.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
+            "-f", f"{docker_dir}/docker-compose.webdev.yml",
             "-p", "gameviewer-config",
             "up", "-d"
         ],
@@ -194,7 +197,7 @@ def execute_choice(choice, rebuild):
     if choices[choice]["container_to_enter"] is not None:
         cmd = [
             "docker", "exec", "-it", container_to_enter,
-            "sh", "-c", "exec sh"
+            "sh", "-c", "exec bash"
         ]
         print(f"{CYAN}Entering {container_to_enter} container...{NC}")
         subprocess.run(cmd)

@@ -14,12 +14,6 @@ services:
     networks:
       - simulation-network
 
-  ssl-vision-client:
-    ports:
-      - "${SSL_VISION_CLIENT_PORT}:${SSL_VISION_CLIENT_PORT}"
-    networks:
-      - simulation-network
-
   ssl-game-controller:
     ports:
       - "${SSL_GAME_CONTROLLER_UI_PORT}:${SSL_GAME_CONTROLLER_UI_PORT}"
