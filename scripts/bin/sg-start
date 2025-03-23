@@ -252,7 +252,7 @@ if __name__ == "__main__":
         for i, choice in enumerate(choices):
             print(f"{i}. {choice['choice-text']}")
 
-        choice = int(input(f"Enter your choice (0-{len(choices)}): "))
+        choice = int(input(f"Enter your choice (0-{len(choices)-1}): "))
 
     if not (0 <= choice <= len(choices)):
         print(f"Invalid choice {choice}...")
