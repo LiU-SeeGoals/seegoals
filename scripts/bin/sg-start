@@ -34,11 +34,13 @@ VISION_CLIENT = envs.get("DOCKER_NAME_SSL_VISION_CLIENT")
 GC = envs.get("DOCKER_NAME_SSL_GAME_CONTROLLER")
 VISION = envs.get("DOCKER_NAME_SSL_VISION")
 SIM = envs.get("DOCKER_NAME_ER_SIM")
+VERBOSE = False
 
 flags = {
     "rebuild": ["--rebuild"],
     "no-network": ["--no-network"],
-    "help": ["-h", "--help"]
+    "help": ["-h", "--help"],
+    "verbose": ["-v", "--verbose"]
 }
 
 remove_containers = [AI, GW, VISION_CLIENT, GC, VISION, SIM]
@@ -184,6 +186,9 @@ def execute_choice(choice, rebuild):
         for image in choices[choice]["pull_images"]:
             subprocess.run(["docker", "pull", image])
 
+    if VERBOSE:
+        print(f"Docker CMD: {" ".join(docker_cmd)}")
+
     subprocess.run(docker_cmd)
 
     if choices[choice]["container_to_enter"] is not None:
@@ -232,6 +237,8 @@ if __name__ == "__main__":
                 rebuild = True
             if arg in flags["no-network"]:
                 network = False
+            if arg in flags["verbose"]:
+                VERBOSE = True
             elif arg in flags["help"]:
                 print("lul")
                 sys.exit(0)
