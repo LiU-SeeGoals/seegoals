@@ -1,0 +1,52 @@
+#compdef sg-fw 
+
+_fetch_serial_devices() {
+  local serial_devices=()
+  if [[ -d /dev ]]; then
+    for device in $(/bin/ls /dev/serial/by-id/* 2>/dev/null | awk '{print $NF}'); do
+      serial_devices+=($device)
+    done
+  fi
+  typeset -U serial_devices
+  echo $serial_devices
+}
+
+_sg-fw() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments \
+    '1: :->command' \
+    '2: :->secondary_option' \
+    '3: :->device'
+
+  case $state in
+    command)
+      _arguments '1:command:(serial make flash help)'
+      ;;
+    secondary_option)
+        case $line[1] in
+            make|flash)
+                _values 'type' robot basestation
+                ;;
+            serial)
+                local devices=($(_fetch_serial_devices))
+                _describe 'serial device' devices
+                ;;
+        esac
+        ;;
+    device)
+      case $line[1] in
+        flash)
+            local devices=($(_fetch_serial_devices))
+            _describe 'serial device' devices
+            ;;
+        *)
+          _files
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_sg-fw "$@"

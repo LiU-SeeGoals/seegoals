@@ -1,6 +1,7 @@
 #!/bin/bash
 
 bin_path="$(pwd)/bin"
+completions_path="$(pwd)/completions"
 
 if echo "$PATH" | grep -q "$bin_path"; then
     echo -e "The path \"$bin_path\" already in \$PATH:\n"
@@ -27,6 +28,7 @@ update_path_in_file() {
             cp "$file" "$file.bak"
 
             echo "export PATH=\"\$PATH:$bin_path\"" >> "$file"
+            echo "fpath=(\$fpath $completions_path)" >> "$file"
             echo -e "\tAdded export PATH in $file"
 
             echo -e "\tReloading shell..."
