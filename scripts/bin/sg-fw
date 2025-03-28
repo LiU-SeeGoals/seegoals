@@ -113,9 +113,14 @@ def connect(dev):
 
 
 def make(repo, dev):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    base_path = os.path.join(script_dir, "..", "..", "firmware", repo)
+    script_cwd = os.path.dirname(os.path.abspath(__file__))
+    base_path = os.path.join(script_cwd, "..", "..", "firmware", repo)
     build_dir = os.path.join(base_path, "build")
+
+    if "--clean" in sys.argv[1:] and os.path.exists(build_dir):
+        subprocess.run(
+            ["rm", "-rf", build_dir]
+        )
 
     if not os.path.exists(build_dir):
         subprocess.run(
