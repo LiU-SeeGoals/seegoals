@@ -1,54 +1,87 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-session="seegoals"
+import subprocess
+import os
+import argparse
+import time
 
-tab_names=(
-    ""
-    "SG"
-    "AI"
-    "GW"
-    "BS"
-    "RB"
-)
+session_name = "seegoals"
+script_cwd = os.path.dirname(os.path.abspath(__file__))
+sg_path = os.path.join(script_cwd, "..", "..")
 
-script_dir="$(cd "$(dirname "$0")" && pwd)"
+tabs = [
+    ["", ""],
+    ["SG", f"{sg_path}"],
+    ["AI", f"{sg_path}/software/controller"],
+    ["GV", f"{sg_path}/software/GameViewer"],
+    ["BS", f"{sg_path}/firmware/basestation"],
+    ["RB", f"{sg_path}/firmware/robot"],
+]
 
-tab_dirs=(
-    ""
-    "$script_dir/../../"
-    "$script_dir/../../software/controller"
-    "$script_dir/../../software/GameViewer"
-    "$script_dir/../../firmware/basestation"
-    "$script_dir/../../firmware/robot"
-)
 
-tmux new-session -d -s "$session" -n "${tab_names[1]}"
+def main():
+    parser = argparse.ArgumentParser(description="Manage tmux session for seegoals.")
+    parser.add_argument("--close", action="store_true", help="Close all nvim sessions and the tmux session.")
+    args = parser.parse_args()
 
-for i in "${!tab_names[@]}"; do
-    if [[ $i -gt 1 ]]; then
-        tmux new-window -t "$session":"$i" -n "${tab_names[$i]}"
-    fi
-done
+    if args.close:
+        close_session()
+    else:
+        start_session()
 
-for i in "${!tab_names[@]}"; do
-    if [[ $i -gt 0 ]]; then
-        tmux select-window -t "$session":"$i"
-        tmux send-keys "cd ${tab_dirs[$i]}" C-m
-        tmux send-keys "nvim +'Neotree toggle'" C-m
-        tmux split-window -v -p 15
-        tmux send-keys "cd ${tab_dirs[$i]}" C-m
 
-        # Add two more vertical panes for the "GW" window
-        if [[ "${tab_names[$i]}" == "GW" ]]; then
-            tmux split-window -h -p 50
-            tmux send-keys "cd ${tab_dirs[$i]}" C-m
-            tmux select-pane -t "$session":"$i".2
-        fi
+def start_session():
+    result = subprocess.run(["tmux", "list-sessions"], capture_output=True, text=True)
+    if session_name in result.stdout:
+        print(f"Session '{session_name}' already exists. Attaching to it.")
+        subprocess.run(["tmux", "attach-session", "-t", session_name])
+        exit(0)
 
-        tmux select-pane -t "$session":"$i".1
-    fi
-done
+    subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-n", tabs[1][0]])
 
-tmux select-window -t "$session":1
-tmux attach-session -t "$session"
+    for i, tab in enumerate(tabs):
+        if i == 0:
+            continue
+        subprocess.run(["tmux", "new-window", "-t", f"{session_name}:{i}", "-n", tab[0]])
+        subprocess.run(["tmux", "select-window", "-t", f"{session_name}:{i}"])
+        subprocess.run(["tmux", "send-keys", f"cd {tab[1]}", "C-m"])
+        subprocess.run(["tmux", "split-window", "-v", "-p", "15"])
+        subprocess.run(["tmux", "send-keys", f"cd {tab[1]}", "C-m"])
+        subprocess.run(["tmux", "select-pane", "-t", f"{session_name}:{i}.1"])
+        subprocess.run(["tmux", "resize-pane", "-t", f"{session_name}:{i}.1", "-Z"])
+        subprocess.run(["tmux", "send-keys", "nvim +'Neotree toggle'", "C-m"])
 
+    subprocess.run(["tmux", "select-window", "-t", f"{session_name}:1"])
+    subprocess.run(["tmux", "attach-session", "-t", session_name])
+
+
+def close_session():
+    result = subprocess.run(["tmux", "list-sessions"], capture_output=True, text=True)
+    if session_name not in result.stdout:
+        print(f"Session '{session_name}' doesn't exists...")
+        exit(0)
+
+    for i in range(len(tabs)):
+        subprocess.run(["tmux", "send-keys", "-t", f"{session_name}:{i}", ":qa", "C-m"])
+
+    time.sleep(2)
+    all_closed = True
+    for i in range(len(tabs)):
+        # Check if nvim is still running in the pane
+        result = subprocess.run(["tmux", "list-panes", "-t", f"{session_name}:{i}", "-F", "#{pane_pid}"], capture_output=True, text=True)
+        if result.returncode == 0:
+            pane_pids = result.stdout.strip().split('\n')
+            for pid in pane_pids:
+                ps_result = subprocess.run(["ps", "-p", pid, "-o", "comm="], capture_output=True, text=True)
+                if ps_result.returncode == 0 and "nvim" in ps_result.stdout:
+                    all_closed = False
+                    break
+
+    if all_closed:
+        subprocess.run(["tmux", "kill-session", "-t", session_name])
+    else:
+        print("Not all nvim sessions were closed. tmux session not killed.")
+
+
+if __name__ == "__main__":
+    main()
