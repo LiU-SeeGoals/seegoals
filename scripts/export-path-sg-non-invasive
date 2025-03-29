@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# This also adds bin to path, but without chaning bashrc
+# Enable sourcing this file when entering the seegoals repo for convinience
+
+bin_path="$(pwd)/bin"
+export PATH=$PATH:$bin_path
+fpath=($fpath $completions_path)
