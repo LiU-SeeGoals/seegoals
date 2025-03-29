@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+
+# This shitty scripts updates all the damn submodules in a way that maybe actually works.
+
+# Crash if stuff turns to shit
+set -euxo pipefail
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd ${SCRIPT_DIR}
+cd ../../
+REPO_DIR=$(pwd)
+echo $REPO_DIR
+
+cd ${REPO_DIR}
+git pull
+cd ${REPO_DIR}/software/GameController
+git pull
+cd ${REPO_DIR}/software/controller
+# dev is main on controller
+git checkout dev
+git pull
+cd ${REPO_DIR}/software/GameViewer
+git pull
+
