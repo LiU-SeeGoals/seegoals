@@ -55,3 +55,11 @@ services:
       GEOMETRY: ${SIM_GEOMETRY}
       REALISM: ${SIM_REALISM}
     restart: "no"
+
+  gr-sim:
+    image: robocupssl/grsim:latest
+    container_name: ${DOCKER_NAME_GR_SIM}
+    environment:
+      - VNC_PASSWORD=vnc
+      - VNC_GEOMETRY=1920x1080
+    restart: "no"

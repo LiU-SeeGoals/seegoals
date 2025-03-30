@@ -33,7 +33,7 @@ GW = envs.get("DOCKER_NAME_GAME_VIEWER")
 VISION_CLIENT = envs.get("DOCKER_NAME_SSL_VISION_CLIENT")
 GC = envs.get("DOCKER_NAME_SSL_GAME_CONTROLLER")
 VISION = envs.get("DOCKER_NAME_SSL_VISION")
-SIM = envs.get("DOCKER_NAME_ER_SIM")
+SIM = envs.get("DOCKER_NAME_SIM")
 VERBOSE = False
 
 flags = {
@@ -144,7 +144,7 @@ choices = [
         "container_to_enter": envs.get("DOCKER_NAME_AI")
     },
     {  # Choice 7
-        "choice-text": "Start local simulation.",
+        "choice-text": "ER-Force local simulation.",
         "pull_images": [],
         "docker_cmd": [
             "docker", "compose",
@@ -152,6 +152,32 @@ choices = [
             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-f", f"{docker_dir}/docker-compose.simulation.yml",
+            "-p", "simulation-config", "up", "-d"
+        ],
+        "container_to_enter": None
+    },
+    {  # Choice 8
+        "choice-text": "Local simulation headless GRSim",
+        "pull_images": [],
+        "docker_cmd": [
+            "docker", "compose",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
+            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
+            "-f", f"{docker_dir}/docker-compose.simulation-grsim.yml",
+            "-p", "simulation-config", "up", "-d"
+        ],
+        "container_to_enter": None
+    },
+    {  # Choice 9
+        "choice-text": "Local simulation GRSim VNC viewer",
+        "pull_images": [],
+        "docker_cmd": [
+            "docker", "compose",
+            "-f", f"{docker_dir}/docker-compose.yml",
+            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
+            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
+            "-f", f"{docker_dir}/docker-compose.simulation-grsim-vnc.yml",
             "-p", "simulation-config", "up", "-d"
         ],
         "container_to_enter": None

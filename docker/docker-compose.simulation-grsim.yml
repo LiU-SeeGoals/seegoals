@@ -27,10 +27,17 @@ services:
       - simulation-network
 
   gr-sim:
-    profiles:
-      - donotstart
+    ports:
+      - "10300:10300"
+      - "10301:10301"
+      - "10302:10302"
+      - "5900:5900"
+    networks:
+      - simulation-network
 
   er-sim:
+    profiles:
+      - donotstart
     networks:
       - simulation-network
 
