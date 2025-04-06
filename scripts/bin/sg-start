@@ -152,7 +152,7 @@ choices = [
             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-f", f"{docker_dir}/docker-compose.simulation.yml",
-            "-p", "simulation-config", "up", "-d"
+            "-p", "dev", "up", "-d"
         ],
         "container_to_enter": None
     },

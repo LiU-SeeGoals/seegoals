@@ -5,6 +5,12 @@ services:
     restart: "no"
     volumes:
       - ../environment.ini:/var/controller/.env
+      - /tmp/.X11-unix:/tmp/.X11-unix 
+      - ${HOME}/.cache/go-build:/root/.cache/go-build
+    environment:
+      - DISPLAY=${DISPLAY}
+    devices:
+      - "/dev/dri:/dev/dri"
 
   game-viewer:
     image: ghcr.io/liu-seegoals/game-viewer:latest
