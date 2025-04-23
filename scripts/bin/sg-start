@@ -25,6 +25,8 @@ def read_env_ini():
                 env_vars[key.strip()] = value.strip().strip('"').strip("'")
     return env_vars
 
+# Enable x forwarding for docker containers
+os.system("xhost +")
 
 envs = read_env_ini()
 
@@ -152,7 +154,7 @@ choices = [
             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-f", f"{docker_dir}/docker-compose.simulation.yml",
-            "-p", "dev", "up", "-d"
+            "-p", "dev-config", "up", "-d"
         ],
         "container_to_enter": None
     },
