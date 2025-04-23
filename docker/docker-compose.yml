@@ -28,11 +28,11 @@ services:
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
     container_name: ${DOCKER_NAME_SSL_VISION_CLIENT}
+    ports:
+      - "${SSL_VISION_CLIENT_PORT}:${SSL_VISION_CLIENT_PORT}"
     command:
       - "-visionAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
-      - "-visualizationAddress"
-      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_VIZ_PORT}"
       - "-address"
       - ":${SSL_VISION_CLIENT_PORT}"
     restart: "no"
@@ -62,10 +62,10 @@ services:
       REALISM: ${SIM_REALISM}
     restart: "no"
 
-  gr-sim:
-    image: robocupssl/grsim:latest
-    container_name: ${DOCKER_NAME_GR_SIM}
-    environment:
-      - VNC_PASSWORD=vnc
-      - VNC_GEOMETRY=1920x1080
-    restart: "no"
+  # gr-sim:
+  #   image: robocupssl/grsim:latest
+  #   container_name: ${DOCKER_NAME_GR_SIM}
+  #   environment:
+  #     - VNC_PASSWORD=vnc
+  #     - VNC_GEOMETRY=1920x1080
+  #   restart: "no"
