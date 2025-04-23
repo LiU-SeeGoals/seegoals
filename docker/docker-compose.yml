@@ -24,6 +24,8 @@ services:
     env_file: ../environment.ini
     volumes:
       - ../environment.ini:/var/GameViewer/.env
+    ports:
+      - "${GAME_VIEWER_PORT}:${GAME_VIEWER_PORT}"
 
   ssl-vision-client:
     image: robocupssl/ssl-vision-client:latest
