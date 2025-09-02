@@ -10,8 +10,8 @@ services:
       - ${HOME}/.cache/go-build:/root/.cache/go-build
     environment:
       - DISPLAY=${DISPLAY}
-    devices:
-      - "/dev/dri:/dev/dri"
+    # devices:
+    #   - "/dev/dri:/dev/dri"
 
   game-viewer:
     platform: linux/amd64

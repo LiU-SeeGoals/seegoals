@@ -60,20 +60,20 @@ choices = [
         ],
         "container_to_enter": None,
     },
-    {  # Choice 1
-        "choice-text": f"'{AI}' and '{GW}' from pre-built images.",
-        "pull_images": [
-            "ghcr.io/liu-seegoals/controller:latest",
-            "ghcr.io/liu-seegoals/game-viewer:latest"
-        ],
-        "docker_cmd": [
-            "docker", "compose",
-            "-f", f"{docker_dir}/docker-compose.yml",
-            "-p", "base-config",
-            "up", "-d"
-        ],
-        "container_to_enter": None,
-    },
+    # {  # Choice 1
+    #     "choice-text": f"'{AI}' and '{GW}' from pre-built images.",
+    #     "pull_images": [
+    #         "ghcr.io/liu-seegoals/controller:latest",
+    #         "ghcr.io/liu-seegoals/game-viewer:latest"
+    #     ],
+    #     "docker_cmd": [
+    #         "docker", "compose",
+    #         "-f", f"{docker_dir}/docker-compose.yml",
+    #         "-p", "base-config",
+    #         "up", "-d"
+    #     ],
+    #     "container_to_enter": None,
+    # },
     {  # Choice 2
         "choice-text": f"Local '{AI}' files, enter '{AI}' container.",
         "pull_images": [
@@ -145,45 +145,19 @@ choices = [
         ],
         "container_to_enter": envs.get("DOCKER_NAME_AI")
     },
-    {  # Choice 7
-        "choice-text": "ER-Force local simulation.",
-        "pull_images": [],
-        "docker_cmd": [
-            "docker", "compose",
-            "-f", f"{docker_dir}/docker-compose.yml",
-            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
-            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
-            "-f", f"{docker_dir}/docker-compose.simulation.yml",
-            "-p", "dev-config", "up", "-d"
-        ],
-        "container_to_enter": None
-    },
-    {  # Choice 8
-        "choice-text": "Local simulation headless GRSim",
-        "pull_images": [],
-        "docker_cmd": [
-            "docker", "compose",
-            "-f", f"{docker_dir}/docker-compose.yml",
-            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
-            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
-            "-f", f"{docker_dir}/docker-compose.simulation-grsim.yml",
-            "-p", "simulation-config", "up", "-d"
-        ],
-        "container_to_enter": None
-    },
-    {  # Choice 9
-        "choice-text": "Local simulation GRSim VNC viewer",
-        "pull_images": [],
-        "docker_cmd": [
-            "docker", "compose",
-            "-f", f"{docker_dir}/docker-compose.yml",
-            "-f", f"{docker_dir}/docker-compose.local-ai.yml",
-            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
-            "-f", f"{docker_dir}/docker-compose.simulation-grsim-vnc.yml",
-            "-p", "simulation-config", "up", "-d"
-        ],
-        "container_to_enter": None
-    }
+#     {  # Choice 7
+#         "choice-text": "ER-Force local simulation.",
+#         "pull_images": [],
+#         "docker_cmd": [
+#             "docker", "compose",
+#             "-f", f"{docker_dir}/docker-compose.yml",
+#             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
+#             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
+#             "-f", f"{docker_dir}/docker-compose.simulation.yml",
+#             "-p", "dev-config", "up", "-d"
+#         ],
+#         "container_to_enter": None
+#     }
 ]
 
 
