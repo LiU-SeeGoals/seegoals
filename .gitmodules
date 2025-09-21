@@ -13,3 +13,6 @@
 [submodule "software/GameViewer"]
 	path = software/GameViewer
 	url = git@github.com:LiU-SeeGoals/GameViewer.git
+[submodule "software/ssl-vision"]
+	path = software/ssl-vision
+	url = git@github.com:LiU-SeeGoals/ssl-vision.git
