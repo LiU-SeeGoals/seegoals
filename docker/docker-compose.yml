@@ -69,6 +69,16 @@ services:
       GEOMETRY: ${SIM_GEOMETRY}
       REALISM: ${SIM_REALISM}
 
+  tiger-auto-referee:
+    image: tigersmannheim/auto-referee   # headless image
+    container_name: ${DOCKER_NAME_TIGER_AUTOREF}
+    restart: "no"
+    network_mode: "host"                 # required for multicast
+    command:
+      - "-hl"
+      - "-va"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
+
   # gr-sim:
   #   image: robocupssl/grsim:latest
   #   container_name: ${DOCKER_NAME_GR_SIM}
