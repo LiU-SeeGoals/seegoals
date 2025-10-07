@@ -29,7 +29,7 @@ services:
 
   ssl-vision-client:
     platform: linux/amd64
-    image: robocupssl/ssl-vision-client:latest
+    image: robocupssl/ssl-vision-client:1.8.3
     container_name: ${DOCKER_NAME_SSL_VISION_CLIENT}
     restart: "no"
     ports:
@@ -66,3 +66,13 @@ services:
     environment:
       GEOMETRY: ${SIM_GEOMETRY}
       REALISM: ${SIM_REALISM}
+
+  tiger-auto-referee:
+    image: tigersmannheim/auto-referee   # headless image
+    container_name: ${DOCKER_NAME_TIGER_AUTOREF}
+    restart: "no"
+    network_mode: "host"                 # required for multicast
+    command:
+      - "-hl"
+      - "-va"
+      - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_SIM_MAIN_PORT}"
