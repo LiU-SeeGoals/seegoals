@@ -36,6 +36,7 @@ GW = envs.get("DOCKER_NAME_GAME_VIEWER")
 VISION_CLIENT = envs.get("DOCKER_NAME_SSL_VISION_CLIENT")
 GC = envs.get("DOCKER_NAME_SSL_GAME_CONTROLLER")
 SIM = envs.get("DOCKER_NAME_SIM")
+AUTOREF = envs.get("DOCKER_NAME_TIGER_AUTOREF")
 VERBOSE = False
 
 flags = {
@@ -45,7 +46,7 @@ flags = {
     "verbose": ["-v", "--verbose"]
 }
 
-remove_containers = [AI, GW, VISION_CLIENT, GC, SIM]
+remove_containers = [AI, GW, VISION_CLIENT, GC, SIM, AUTOREF]
 
 choices = [
     {
@@ -77,7 +78,7 @@ choices = [
         "container_to_enter": AI
     },
     {
-        "choice-text": f"Local '{GW}' files, enter '{GW}' container (webdev).",
+        "choice-text": f"Local '{GW}' files, enter '{GW}' container.",
         "pull_images": [
             "ghcr.io/liu-seegoals/controller:latest"
         ],
@@ -89,7 +90,7 @@ choices = [
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-f", f"{docker_dir}/docker-compose.webdev.yml",
-            "-p", "gameviewer-config",
+            "-p", "gameviewer-dev-config",
             "up", "-d"
         ],
         "container_to_enter": GW
@@ -103,12 +104,12 @@ choices = [
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
-            "-p", "dev-config", "up",
+            "-p", "ai-dev-config", "up",
         ],
         "container_to_enter": None
     },
     {
-        "choice-text": f"Local '{AI}' with ssl-vision (only on fetdator).",
+        "choice-text": f"Local '{AI}' and '{GW}' with ssl-vision (only on fetdatorn).",
         "pull_images": [
             "ghcr.io/liu-seegoals/game-viewer:latest"
         ],
@@ -117,8 +118,9 @@ choices = [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
             "-f", f"{docker_dir}/docker-compose.fetdatorn.yml",
+            "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
-            "-p", "gameviewer-config", "up",
+            "-p", "ssl-vision-config", "up",
         ],
         "container_to_enter": None
     },
@@ -132,7 +134,7 @@ choices = [
             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
             "-f", f"{docker_dir}/docker-compose.competition.yml",
-            "-p", "gameviewer-config", "up", "-d"
+            "-p", "competition-config", "up", "-d"
         ],
         "container_to_enter": envs.get("DOCKER_NAME_AI")
     },
