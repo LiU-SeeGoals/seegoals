@@ -13,7 +13,8 @@ NC = "\033[0m"
 script_dir = os.path.dirname(os.path.abspath(__file__))
 env_path = os.path.join(script_dir, "..", "..", "environment.ini")
 docker_dir = os.path.join(script_dir, "..", "..", "docker")
-
+software_dir = os.path.join(script_dir, "..", "..", "software")
+ssl_vision_dir = os.path.join(software_dir, "ssl-vision")
 
 def read_env_ini():
     env_vars = {}
@@ -34,7 +35,6 @@ AI = envs.get("DOCKER_NAME_AI")
 GW = envs.get("DOCKER_NAME_GAME_VIEWER")
 VISION_CLIENT = envs.get("DOCKER_NAME_SSL_VISION_CLIENT")
 GC = envs.get("DOCKER_NAME_SSL_GAME_CONTROLLER")
-VISION = envs.get("DOCKER_NAME_SSL_VISION")
 SIM = envs.get("DOCKER_NAME_SIM")
 VERBOSE = False
 
@@ -45,12 +45,13 @@ flags = {
     "verbose": ["-v", "--verbose"]
 }
 
-remove_containers = [AI, GW, VISION_CLIENT, GC, VISION, SIM]
+remove_containers = [AI, GW, VISION_CLIENT, GC, SIM]
 
 choices = [
-    {  # Choice 0
+    {
         "choice-text": "Rebuild local images.",
         "pull_images": [],
+        "pre_cmd": [],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
@@ -60,25 +61,12 @@ choices = [
         ],
         "container_to_enter": None,
     },
-    # {  # Choice 1
-    #     "choice-text": f"'{AI}' and '{GW}' from pre-built images.",
-    #     "pull_images": [
-    #         "ghcr.io/liu-seegoals/controller:latest",
-    #         "ghcr.io/liu-seegoals/game-viewer:latest"
-    #     ],
-    #     "docker_cmd": [
-    #         "docker", "compose",
-    #         "-f", f"{docker_dir}/docker-compose.yml",
-    #         "-p", "base-config",
-    #         "up", "-d"
-    #     ],
-    #     "container_to_enter": None,
-    # },
-    {  # Choice 2
+    {
         "choice-text": f"Local '{AI}' files, enter '{AI}' container.",
         "pull_images": [
             "ghcr.io/liu-seegoals/game-viewer:latest"
         ],
+        "pre_cmd": [],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
@@ -88,11 +76,12 @@ choices = [
         ],
         "container_to_enter": AI
     },
-    {  # Choice 3
+    {
         "choice-text": f"Local '{GW}' files, enter '{GW}' container (webdev).",
         "pull_images": [
             "ghcr.io/liu-seegoals/controller:latest"
         ],
+        "pre_cmd": [],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
@@ -105,9 +94,10 @@ choices = [
         ],
         "container_to_enter": GW
     },
-    {  # Choice 4
+    {
         "choice-text": f"Local '{AI}' and '{GW}' files.",
         "pull_images": [],
+        "pre_cmd": [],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
@@ -117,12 +107,12 @@ choices = [
         ],
         "container_to_enter": None
     },
-    {  # Choice 5
-        "choice-text": f"Start real '{VISION}' (only on fetdator).",
+    {
+        "choice-text": f"Local '{AI}' with ssl-vision (only on fetdator).",
         "pull_images": [
-            "ghcr.io/liu-seegoals/ssl-vision:latest"
             "ghcr.io/liu-seegoals/game-viewer:latest"
         ],
+        "pre_cmd": [ f"{ssl_vision_dir}/start.sh" ],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
@@ -132,9 +122,10 @@ choices = [
         ],
         "container_to_enter": None
     },
-    {  # Choice 6
+    {
         "choice-text": "Start for competition.",
         "pull_images": [],
+        "pre_cmd": [],
         "docker_cmd": [
             "docker", "compose",
             "-f", f"{docker_dir}/docker-compose.yml",
@@ -145,19 +136,6 @@ choices = [
         ],
         "container_to_enter": envs.get("DOCKER_NAME_AI")
     },
-#     {  # Choice 7
-#         "choice-text": "ER-Force local simulation.",
-#         "pull_images": [],
-#         "docker_cmd": [
-#             "docker", "compose",
-#             "-f", f"{docker_dir}/docker-compose.yml",
-#             "-f", f"{docker_dir}/docker-compose.local-ai.yml",
-#             "-f", f"{docker_dir}/docker-compose.local-gameviewer.yml",
-#             "-f", f"{docker_dir}/docker-compose.simulation.yml",
-#             "-p", "dev-config", "up", "-d"
-#         ],
-#         "container_to_enter": None
-#     }
 ]
 
 
@@ -182,6 +160,7 @@ def execute_choice(choice, rebuild):
 
     container_to_enter = None
     docker_cmd = choices[choice]["docker_cmd"]
+    pre_cmd = choices[choice]["pre_cmd"]
     container_to_enter = choices[choice]["container_to_enter"]
 
     if rebuild:
@@ -190,6 +169,11 @@ def execute_choice(choice, rebuild):
     if network:
         for image in choices[choice]["pull_images"]:
             subprocess.run(["docker", "pull", image])
+
+    if pre_cmd:
+        if VERBOSE:
+            print(f"Pre CMD: {' '.join(pre_cmd)}")
+        subprocess.Popen(pre_cmd)
 
     if VERBOSE:
         print(f"Docker CMD: {' '.join(docker_cmd)}")

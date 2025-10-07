@@ -10,8 +10,6 @@ services:
       - ${HOME}/.cache/go-build:/root/.cache/go-build
     environment:
       - DISPLAY=${DISPLAY}
-    # devices:
-    #   - "/dev/dri:/dev/dri"
 
   game-viewer:
     platform: linux/amd64
@@ -68,11 +66,3 @@ services:
     environment:
       GEOMETRY: ${SIM_GEOMETRY}
       REALISM: ${SIM_REALISM}
-
-  # gr-sim:
-  #   image: robocupssl/grsim:latest
-  #   container_name: ${DOCKER_NAME_GR_SIM}
-  #   environment:
-  #     - VNC_PASSWORD=vnc
-  #     - VNC_GEOMETRY=1920x1080
-  #   restart: "no"

@@ -1,13 +1,6 @@
 services:
-  ssl-vision:
-    image: ghcr.io/liu-seegoals/ssl-vision:latest
-    container_name: ${DOCKER_NAME_SSL_VISION}
-    environment:
-      - QT_QPA_PLATFORM=offscreen
-    restart: no
-    stdin_open: true
-    network_mode: "host"
-    tty: true
+  ai:
+    network_mode: host
 
   game-viewer:
     environment:
@@ -15,11 +8,13 @@ services:
       - SSL_VISION_MULTICAST_PORT=${SSL_VISION_REAL_MAIN_PORT}
     depends_on:
       - ${DOCKER_NAME_AI}
+    network_mode: host
 
   ssl-vision-client:
     command:
       - "-visionAddress"
       - "${SSL_VISION_MULTICAST_ADDR}:${SSL_VISION_REAL_MAIN_PORT}"
+    network_mode: host
 
   ssl-game-controller:
     command:
@@ -31,5 +26,8 @@ services:
       - "${SSL_GAME_CONTROLLER_PUBLISH_ADDR}:${SSL_GAME_CONTROLLER_PUBLISH_PORT}"
       - "-address"
       - ":${SSL_GAME_CONTROLLER_UI_PORT}"
-    depends_on:
-      - ${DOCKER_NAME_SSL_VISION}
+    network_mode: host
+
+  er-sim:
+    profiles:
+      - donotstart
